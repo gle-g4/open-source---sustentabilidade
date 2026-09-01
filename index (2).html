@@ -1,0 +1,574 @@
+<!-- Atlas Botânico: página única editorial naturalista; marfim quente, Verde Atlas, leitura assimétrica e indicadores de medição. -->
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <meta name="theme-color" content="#24533B" />
+    <meta name="description" content="Estime a sua pegada de carbono mensal com referências brasileiras e descubra hábitos de menor impacto." />
+    <title>Rastro Clima — calculadora de pegada de carbono</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      /* Atlas Botânico: caderno de campo contemporâneo, marfim quente, Verde Atlas e indicadores táteis. */
+      :root { --atlas: #24533b; --ink: #163124; --paper: #f4f1e8; --paper-light: #fbfaf6; --moss: #5f8568; --lime: #b5d76a; --clay: #bc6f4c; --line: #d9dfcf; --muted: #6d766d; --gold: #cc9b48; --ease-out: cubic-bezier(.23,1,.32,1); }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { margin: 0; color: var(--ink); background: var(--paper); font-family: "Manrope", Arial, sans-serif; font-size: 15px; line-height: 1.5; }
+      button, input, select { font: inherit; }
+      button, select, input { -webkit-tap-highlight-color: transparent; }
+      button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #b5d76a; outline-offset: 3px; }
+      img { max-width: 100%; }
+      .page-shell { overflow: hidden; min-width: 320px; background: radial-gradient(circle at 16% 18%, rgba(181,215,106,.12) 0 1px, transparent 1.5px) 0 0 / 14px 14px, var(--paper); }
+
+      /* header */
+      .site-header { min-height: 76px; width: min(1180px, calc(100% - 48px)); margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; position: relative; z-index: 5; }
+      .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--atlas); text-decoration: none; letter-spacing: -.06em; }
+      .brand-mark { width: 40px; height: 40px; flex: none; border-radius: 50%; background: var(--atlas); display: grid; place-items: center; }
+      .brand-mark svg { width: 22px; height: 22px; }
+      .brand span { display: grid; font: 24px/16px "DM Serif Display", Georgia, serif; }
+      .brand strong { font-weight: 400; }
+      .brand em { color: var(--moss); font-size: 13px; letter-spacing: .22em; font-style: normal; text-transform: uppercase; padding-left: 2px; }
+      .header-actions { display: flex; align-items: center; gap: 22px; }
+      .method-note, .eyebrow, .label { color: var(--moss); font-size: 10px; font-weight: 800; letter-spacing: .17em; text-transform: uppercase; }
+      .text-button { border: 0; border-bottom: 1px solid var(--atlas); background: none; color: var(--atlas); padding: 4px 0 2px; font-size: 12px; font-weight: 800; cursor: pointer; transition: color 160ms var(--ease-out), transform 160ms var(--ease-out); }
+      .text-button:hover { color: var(--clay); border-color: var(--clay); } .text-button:active { transform: scale(.97); }
+      main { display: block; }
+
+      /* hero */
+      .hero { min-height: 480px; margin: 0 auto; max-width: 1280px; padding-left: max(24px, calc((100vw - 1180px) / 2)); display: grid; grid-template-columns: minmax(380px, .92fr) minmax(390px, 1.08fr); align-items: stretch; position: relative; }
+      .hero::before { content: ""; position: absolute; left: -100px; bottom: 27px; width: 42%; height: 210px; opacity: .25; background: repeating-radial-gradient(ellipse at 45% 100%, transparent 0 13px, var(--moss) 14px 15px, transparent 16px 23px); transform: rotate(-9deg); pointer-events: none; }
+      .hero-copy { padding: 62px 32px 64px 0; position: relative; z-index: 1; align-self: center; }
+      .eyebrow { display: flex; align-items: center; gap: 9px; margin: 0 0 18px; }
+      .eyebrow span { display: block; width: 24px; height: 1px; background: currentColor; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { max-width: 530px; margin-bottom: 22px; font: 50px/1.02 "DM Serif Display", Georgia, serif; letter-spacing: -.04em; color: var(--atlas); }
+      h1 i { color: var(--clay); font-style: italic; }
+      .hero-intro { max-width: 485px; margin-bottom: 28px; color: #496054; font-size: 16px; line-height: 1.7; }
+      .primary-link { display: inline-flex; align-items: center; gap: 18px; padding: 12px 0 10px; border-bottom: 1px solid var(--atlas); color: var(--atlas); font-size: 12px; font-weight: 800; letter-spacing: .05em; text-decoration: none; text-transform: uppercase; transition: gap 180ms var(--ease-out), color 180ms var(--ease-out); }
+      .primary-link span { border: 1px solid var(--atlas); border-radius: 50%; width: 22px; height: 22px; display: grid; place-items: center; font-size: 15px; line-height: 1; transition: background 180ms var(--ease-out), color 180ms var(--ease-out); }
+      .primary-link:hover { gap: 24px; color: var(--clay); } .primary-link:hover span { background: var(--atlas); color: white; }
+      .hero-visual { min-height: 480px; position: relative; clip-path: polygon(9% 0, 100% 0, 100% 100%, 0 100%); background: linear-gradient(160deg,#3a6b4c 0%,#24533b 46%,#173627 100%); overflow: hidden; }
+      .hero-visual svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .hero-visual::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, var(--paper) 0%, rgba(244,241,232,.13) 32%, rgba(36,83,59,.05) 100%); }
+      .field-stamp { position: absolute; right: 42px; bottom: 38px; z-index: 2; display: grid; width: 124px; height: 124px; place-items: center; color: #fff; border: 1px solid rgba(255,255,255,.82); border-radius: 50%; text-align: center; transform: rotate(10deg); backdrop-filter: blur(3px); }
+      .field-stamp span, .field-stamp small { font-size: 8px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; } .field-stamp b { font: 40px/.8 "DM Serif Display", Georgia, serif; }
+
+      /* calculator section */
+      .calculator-section { position: relative; padding: 90px max(24px, calc((100vw - 1180px) / 2)) 88px; background: var(--paper-light); }
+      .calculator-section::before { content: ""; position: absolute; top: -1px; right: 0; left: 0; height: 18px; background: linear-gradient(135deg, transparent 12px, var(--paper-light) 0) 0 0/24px 18px repeat-x; }
+      .section-kicker { width: min(620px, 100%); margin: 0 0 34px; }
+      .section-kicker h2, .action-heading h2, .method-section h2 { margin-bottom: 10px; color: var(--atlas); font: 40px/1 "DM Serif Display", Georgia, serif; letter-spacing: -.04em; }
+      .section-kicker > p:last-child { margin-bottom: 0; color: var(--muted); }
+      .preset-row { display: flex; align-items: center; justify-content: space-between; max-width: 765px; margin: 0 0 20px; padding: 9px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--moss); font-size: 11px; font-weight: 700; flex-wrap: wrap; gap: 10px; }
+      .preset-row > span { text-transform: uppercase; letter-spacing: .13em; font-size: 9px; } .preset-row div { display: flex; gap: 5px; flex-wrap: wrap; }
+      .preset { border: 1px solid transparent; background: transparent; color: var(--atlas); padding: 6px 9px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 160ms var(--ease-out); }
+      .preset:hover, .preset.is-active { background: #e5edcf; border-color: #cfdda9; } .preset:active { transform: scale(.97); }
+      .calculator-layout { display: grid; grid-template-columns: minmax(0, 1fr) 375px; gap: clamp(36px, 6vw, 88px); align-items: start; }
+      .survey { min-width: 0; }
+      .survey-section { margin: 0; padding: 30px 0 35px; min-width: 0; border: 0; border-bottom: 1px solid var(--line); position: relative; }
+      .survey-section:first-child { padding-top: 12px; }
+      legend { padding: 0 0 24px; display: flex; align-items: center; gap: 14px; color: var(--ink); }
+      legend > span:last-child { display: grid; gap: 2px; } legend b { font: 25px/1 "DM Serif Display", Georgia, serif; letter-spacing: -.025em; } legend small { color: var(--muted); font-size: 11px; }
+      .section-index { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid #adbf91; border-radius: 50%; color: var(--atlas); font-size: 10px; font-weight: 800; flex: none; }
+      .field-group { margin-bottom: 23px; max-width: 560px; } .field-group:last-child { margin-bottom: 0; }
+      .field-group > label, .dual-fields label { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #31493a; font-size: 12px; font-weight: 800; }
+      output { color: var(--atlas); font-size: 13px; }
+      .range-field input[type="range"] { display: block; width: 100%; margin: 14px 0 5px; appearance: none; -webkit-appearance: none; height: 4px; border-radius: 10px; background: linear-gradient(to right, var(--atlas) 0 var(--progress, 0%), #dfe3d9 var(--progress, 0%) 100%); cursor: pointer; }
+      .range-field input[type="range"]::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 17px; height: 17px; background: var(--paper-light); border: 2px solid var(--atlas); border-radius: 50%; box-shadow: 0 2px 6px rgba(22,49,36,.15); transition: transform 160ms var(--ease-out); } .range-field input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.15); }
+      .range-field input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; background: var(--paper-light); border: 2px solid var(--atlas); border-radius: 50%; box-shadow: 0 2px 6px rgba(22,49,36,.15); border: none; }
+      .range-scale { display: flex; justify-content: space-between; color: #90998f; font-size: 9px; font-weight: 700; }
+      .field-group select { width: 100%; margin-top: 8px; appearance: none; padding: 11px 37px 11px 13px; border: 1px solid var(--line); border-radius: 3px; color: var(--atlas); background: linear-gradient(45deg,transparent 50%,var(--atlas) 50%) calc(100% - 17px) 50%/6px 6px no-repeat,linear-gradient(135deg,var(--atlas) 50%,transparent 50%) calc(100% - 12px) 50%/6px 6px no-repeat,#fffefb; font-size: 12px; font-weight: 700; cursor: pointer; transition: border-color 160ms var(--ease-out); } .field-group select:hover { border-color: var(--moss); }
+      .dual-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 560px; } .dual-fields label { display: grid; align-items: start; gap: 8px; } .dual-fields input { width: 100%; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 8px 1px; color: var(--atlas); background: transparent; font: 26px/1 "DM Serif Display", Georgia, serif; } .dual-fields input:focus { border-color: var(--atlas); outline: 0; }
+      .field-hint { color: var(--moss); font-size: 10px; margin: 9px 0 0; }
+      .diet-grid { display: grid; gap: 10px; max-width: 615px; }
+      .diet-grid label { position: relative; cursor: pointer; display: block; }
+      .diet-grid input { position: absolute; opacity: 0; }
+      .diet-grid span { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 15px 12px; background: #f3f4ed; border-left: 2px solid #9bb58b; transition: background 160ms var(--ease-out), border-color 160ms var(--ease-out); }
+      .diet-grid b { color: var(--atlas); font-size: 12px; font-weight: 800; display: block; }
+      .diet-grid small { display: block; color: var(--muted); margin-top: 4px; font-size: 10px; }
+      .diet-grid input:checked + span { background: #e5edcf; border-color: var(--lime); }
+      .diet-grid em { flex: none; font-style: normal; color: var(--muted); font-size: 10px; font-weight: 700; }
+
+      .choice-label { margin: 0 0 12px; color: #31493a; font-size: 12px; font-weight: 800; }
+      .recycle-choices { display: grid; grid-template-columns: repeat(3,1fr); max-width: 615px; gap: 7px; }
+      .recycle-choices label { position: relative; cursor: pointer; }
+      .recycle-choices input { position: absolute; opacity: 0; }
+      .recycle-choices span { min-height: 78px; padding: 13px; display: grid; gap: 4px; align-content: center; border: 1px solid var(--line); background: #fffefb; transition: background 180ms var(--ease-out), border-color 180ms var(--ease-out), transform 180ms var(--ease-out); }
+      .recycle-choices b { color: var(--atlas); font-size: 12px; }
+      .recycle-choices small { color: var(--muted); font-size: 9px; }
+      .recycle-choices input:checked + span { background: #edf3dc; border-color: #9cba73; }
+      .recycle-choices label:hover span { transform: translateY(-2px); }
+
+      /* results panel */
+      .results-panel { position: sticky; top: 24px; padding: 26px 24px 20px; color: #f5f5ed; background: var(--atlas); box-shadow: 13px 15px 0 #d7dfc5; overflow: hidden; }
+      .results-panel::before { content: ""; position: absolute; inset: -50px -40px auto auto; width: 180px; height: 180px; border: 1px solid rgba(255,255,255,.22); border-radius: 50%; box-shadow: 0 0 0 26px rgba(255,255,255,.045),0 0 0 54px rgba(255,255,255,.035); }
+      .results-panel__top { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; position: relative; z-index: 1; }
+      .results-panel .eyebrow { margin-bottom: 20px; color: var(--lime); }
+      .icon-button { width: 28px; height: 28px; border: 1px solid rgba(255,255,255,.45); border-radius: 50%; color: #fff; background: transparent; line-height: 1; cursor: pointer; transition: all 160ms var(--ease-out); }
+      .icon-button:hover { background: var(--lime); border-color: var(--lime); color: var(--atlas); }
+      .icon-button:active { transform: scale(.97); }
+      .results-panel h2 { position: relative; margin: 0 0 15px; color: #fff; font: 26px/1 "DM Serif Display", Georgia, serif; letter-spacing: -.02em; }
+      .result-orbit { --progress: 18%; width: 180px; height: 180px; display: grid; align-content: center; justify-items: center; margin: 4px auto 14px; position: relative; border-radius: 50%; background: conic-gradient(from 208deg, var(--lime) 0deg calc(var(--progress) * 2.6deg), rgba(255,255,255,.18) calc(var(--progress) * 2.6deg) 260deg, transparent 260deg); transition: background 500ms var(--ease-out); }
+      .result-orbit::before { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: var(--atlas); }
+      .result-orbit span, .result-orbit small, .result-orbit i { position: relative; z-index: 1; }
+      .result-orbit span { color: #fff; font: 46px/.88 "DM Serif Display", Georgia, serif; letter-spacing: -.05em; }
+      .result-orbit small { margin-top: 5px; color: #d4e1c4; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+      .result-status { min-height: 44px; margin: 0 auto 20px; max-width: 285px; text-align: center; color: #dfe9d4; font-size: 11px; line-height: 1.55; position: relative; z-index: 1; }
+      .comparison { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 4px 9px; margin: 0 -4px; padding: 13px 4px; border-top: 1px solid rgba(255,255,255,.16); border-bottom: 1px solid rgba(255,255,255,.16); color: #dfe9d4; font-size: 9px; z-index: 1; }
+      .comparison b { color: #fff; font-size: 10px; }
+      .comparison-line { grid-column: 1/-1; height: 4px; background: rgba(255,255,255,.17); border-radius: 4px; overflow: hidden; }
+      .comparison-line i { display: block; width: 0; height: 100%; background: var(--lime); transition: width 420ms var(--ease-out); }
+      .comparison small { grid-column: 1/-1; color: #dfe9d4; font-size: 9px; }
+      .annual-total { display: flex; align-items: baseline; justify-content: space-between; padding: 12px 0; color: #dfe9d4; font-size: 10px; position: relative; z-index: 1; }
+      .annual-total b { color: #fff; font: 23px/1 "DM Serif Display", Georgia, serif; }
+      .breakdown { padding-top: 7px; position: relative; z-index: 1; }
+      .breakdown-title { color: var(--lime); font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+      .breakdown-row { display: grid; grid-template-columns: 1fr auto; column-gap: 9px; margin: 10px 0; color: #e8eee0; font-size: 10px; align-items: center; }
+      .breakdown-row > span { display: flex; align-items: center; gap: 7px; }
+      .breakdown-row > span i { width: 6px; height: 6px; border-radius: 50%; background: var(--category-color); flex: none; }
+      .breakdown-row > b { color: #fff; font-size: 10px; }
+      .breakdown-bar { grid-column: 1/-1; height: 3px; background: rgba(255,255,255,.14); border-radius: 3px; overflow: hidden; }
+      .breakdown-bar i { display: block; height: 100%; width: 0; background: var(--category-color); transition: width 420ms var(--ease-out); }
+      .results-footnote { margin: 16px 0 0; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.16); color: #b9c8ae; font-size: 9px; line-height: 1.6; position: relative; z-index: 1; }
+
+      /* method section */
+      .method-section { padding: 82px max(24px, calc((100vw - 1180px) / 2)) 96px; background: var(--paper); border-top: 1px solid var(--line); }
+      .method-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 40px; }
+      .method-card { padding: 22px 20px 20px; background: var(--paper-light); border-top: 2px solid var(--moss); }
+      .method-card b { display: block; margin-bottom: 8px; color: var(--atlas); font: 19px/1.15 "DM Serif Display", Georgia, serif; }
+      .method-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+      /* footer */
+      footer { padding: 40px max(24px, calc((100vw - 1180px) / 2)) 44px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; background: var(--paper-light); }
+      footer nav { display: flex; gap: 20px; }
+      footer a { color: var(--atlas); text-decoration: none; font-weight: 700; } footer a:hover { color: var(--clay); }
+
+      @media (max-width: 980px) {
+        .hero { grid-template-columns: 1fr; padding-left: 24px; }
+        .hero-visual { display: none; }
+        .hero-copy { padding: 56px 0 40px; }
+        h1 { font-size: 40px; }
+        .calculator-layout { grid-template-columns: 1fr; }
+        .results-panel { position: static; box-shadow: 8px 9px 0 #d7dfc5; }
+        .method-grid { grid-template-columns: 1fr 1fr; }
+      }
+      @media (max-width: 620px) {
+        .site-header { width: calc(100% - 32px); }
+        .dual-fields { grid-template-columns: 1fr; }
+        .recycle-choices { grid-template-columns: 1fr; }
+        .method-grid { grid-template-columns: 1fr; }
+        .field-stamp { display: none; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * { transition: none !important; scroll-behavior: auto !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="#topo">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 21c-4-3-7-7-7-11a7 7 0 0 1 14 0c0 4-3 8-7 11Z" stroke="#f4f1e8" stroke-width="1.4"/><path d="M12 6v9M12 9l-2.5-2M12 12l3-2.2" stroke="#f4f1e8" stroke-width="1.2" stroke-linecap="round"/></svg>
+          </span>
+          <span><strong>Rastro</strong>Clima<em>Atlas Botânico</em></span>
+        </a>
+        <div class="header-actions">
+          <span class="method-note">Referências brasileiras · 2026</span>
+          <button class="text-button" type="button" onclick="document.getElementById('metodologia').scrollIntoView({behavior:'smooth'})">Como calculamos</button>
+        </div>
+      </header>
+
+      <main id="topo">
+        <section class="hero" aria-label="Apresentação">
+          <div class="hero-copy">
+            <p class="eyebrow"><span></span>Calculadora de carbono pessoal</p>
+            <h1>Meça o peso real dos seus <i>hábitos diários</i> no clima.</h1>
+            <p class="hero-intro">Responda quatro grupos de perguntas sobre transporte, energia, alimentação e resíduos. Em segundos, você recebe uma estimativa anual em toneladas de CO₂e comparada à média brasileira, com sugestões de onde reduzir primeiro.</p>
+            <a class="primary-link" href="#calculadora"><span>→</span>Iniciar cálculo</a>
+          </div>
+          <div class="hero-visual" aria-hidden="true">
+            <svg viewBox="0 0 600 480" preserveAspectRatio="xMidYMid slice">
+              <path d="M40 460 C 120 380, 90 300, 160 250 S 260 200, 300 120" stroke="#b5d76a" stroke-width="1.5" fill="none" opacity=".5"/>
+              <path d="M480 30 C 420 100, 460 180, 400 240 S 340 340, 360 460" stroke="#f4f1e8" stroke-width="1" fill="none" opacity=".3"/>
+              <circle cx="300" cy="120" r="3" fill="#b5d76a"/>
+              <circle cx="160" cy="250" r="2.5" fill="#f4f1e8" opacity=".6"/>
+              <circle cx="400" cy="240" r="2.5" fill="#f4f1e8" opacity=".5"/>
+              <g opacity=".5" stroke="#f4f1e8" stroke-width="1">
+                <path d="M120 90 q20 -30 40 0 q20 -30 40 0" fill="none"/>
+                <path d="M420 340 q20 -30 40 0 q20 -30 40 0" fill="none"/>
+              </g>
+            </svg>
+            <div class="field-stamp">
+              <span>Ponto de<br />referência</span>
+              <b>2,2</b>
+              <small>ton CO₂e / ano · média BR</small>
+            </div>
+          </div>
+        </section>
+
+        <section class="calculator-section" id="calculadora" aria-label="Calculadora">
+          <div class="section-kicker">
+            <p class="eyebrow"><span></span>Formulário de campo</p>
+            <h2>Seu ano em emissões</h2>
+            <p>Preencha com valores aproximados — não é preciso ter certeza absoluta. Os resultados à direita se atualizam a cada resposta.</p>
+          </div>
+
+          <div class="preset-row">
+            <span>Atalhos de perfil</span>
+            <div>
+              <button class="preset" type="button" data-preset="urbano">Urbano sem carro</button>
+              <button class="preset" type="button" data-preset="medio">Rotina média</button>
+              <button class="preset" type="button" data-preset="rural">Casa com carro</button>
+            </div>
+          </div>
+
+          <div class="calculator-layout">
+            <form class="survey" id="carbon-form">
+              <fieldset class="survey-section">
+                <legend>
+                  <span class="section-index">01</span>
+                  <span><b>Mobilidade</b><small>Como você se desloca no dia a dia</small></span>
+                </legend>
+
+                <div class="field-group range-field">
+                  <label for="carKm">Km de carro por semana <output id="carKmOut">80 km</output></label>
+                  <input type="range" id="carKm" min="0" max="500" step="10" value="80" />
+                  <div class="range-scale"><span>0</span><span>250</span><span>500</span></div>
+                </div>
+
+                <div class="field-group range-field">
+                  <label for="publicKm">Km de transporte público por semana <output id="publicKmOut">40 km</output></label>
+                  <input type="range" id="publicKm" min="0" max="400" step="10" value="40" />
+                  <div class="range-scale"><span>0</span><span>200</span><span>400</span></div>
+                </div>
+
+                <div class="field-group">
+                  <label for="flights">Voos por ano<span></span></label>
+                  <select id="flights">
+                    <option value="0">Nenhum</option>
+                    <option value="1" selected>1 voo curto (nacional)</option>
+                    <option value="3">2 a 3 voos nacionais</option>
+                    <option value="1long">1 voo internacional</option>
+                    <option value="4">4 ou mais voos</option>
+                  </select>
+                </div>
+              </fieldset>
+
+              <fieldset class="survey-section">
+                <legend>
+                  <span class="section-index">02</span>
+                  <span><b>Energia doméstica</b><small>Consumo da sua casa</small></span>
+                </legend>
+
+                <div class="dual-fields">
+                  <label>Conta de luz média<span></span>
+                    <input type="number" id="kwh" value="220" min="0" step="10" inputmode="numeric" />
+                    <small class="field-hint">kWh por mês</small>
+                  </label>
+                  <label>Moradores na casa<span></span>
+                    <input type="number" id="occupants" value="2" min="1" max="10" step="1" inputmode="numeric" />
+                    <small class="field-hint">divide o total por pessoa</small>
+                  </label>
+                </div>
+                <p class="field-hint">A matriz elétrica brasileira é majoritariamente hídrica, então o fator de emissão por kWh é baixo comparado à média mundial — mas ainda conta.</p>
+              </fieldset>
+
+              <fieldset class="survey-section">
+                <legend>
+                  <span class="section-index">03</span>
+                  <span><b>Alimentação</b><small>O padrão que mais se aproxima do seu</small></span>
+                </legend>
+
+                <div class="diet-grid" role="radiogroup" aria-label="Padrão alimentar">
+                  <label>
+                    <input type="radio" name="diet" value="alto" />
+                    <span><span><b>Carne todos os dias</b><small>Carne bovina ou suína na maioria das refeições</small></span><em>alto impacto</em></span>
+                  </label>
+                  <label>
+                    <input type="radio" name="diet" value="moderado" checked />
+                    <span><span><b>Onívoro moderado</b><small>Carne algumas vezes por semana, resto variado</small></span><em>impacto médio</em></span>
+                  </label>
+                  <label>
+                    <input type="radio" name="diet" value="vegetariano" />
+                    <span><span><b>Vegetariano</b><small>Ovos e laticínios, sem carne</small></span><em>impacto baixo</em></span>
+                  </label>
+                  <label>
+                    <input type="radio" name="diet" value="vegano" />
+                    <span><span><b>Vegano</b><small>Somente alimentos de origem vegetal</small></span><em>impacto mínimo</em></span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset class="survey-section">
+                <legend>
+                  <span class="section-index">04</span>
+                  <span><b>Resíduos</b><small>O que acontece com o seu lixo</small></span>
+                </legend>
+
+                <p class="choice-label">Separação de recicláveis em casa</p>
+                <div class="recycle-choices" role="radiogroup" aria-label="Nível de reciclagem">
+                  <label>
+                    <input type="radio" name="recycle" value="nenhuma" />
+                    <span><b>Nenhuma</b><small>Tudo junto no mesmo lixo</small></span>
+                  </label>
+                  <label>
+                    <input type="radio" name="recycle" value="parcial" checked />
+                    <span><b>Parcial</b><small>Separo o que é mais fácil</small></span>
+                  </label>
+                  <label>
+                    <input type="radio" name="recycle" value="completa" />
+                    <span><b>Completa</b><small>Separo tudo e comprosto orgânicos</small></span>
+                  </label>
+                </div>
+              </fieldset>
+            </form>
+
+            <aside class="results-panel" aria-live="polite">
+              <div class="results-panel__top">
+                <p class="eyebrow"><span></span>Estimativa</p>
+                <button class="icon-button" type="button" id="resetBtn" title="Redefinir formulário" aria-label="Redefinir formulário">↺</button>
+              </div>
+              <h2>Sua pegada anual</h2>
+              <div class="result-orbit" id="orbit">
+                <span id="totalTons">2,4</span>
+                <small>toneladas CO₂e</small>
+              </div>
+              <p class="result-status" id="statusText">Um pouco acima da média nacional — a maior fatia vem da mobilidade.</p>
+
+              <div class="comparison">
+                <span>Você</span><b id="youVsAvg">109%</b>
+                <div class="comparison-line"><i id="compareBar" style="width:54%"></i></div>
+                <small>da média brasileira (2,2 ton CO₂e/ano por pessoa)</small>
+              </div>
+
+              <div class="annual-total">
+                <span>Total mensal estimado</span>
+                <b id="monthlyKg">198 kg</b>
+              </div>
+
+              <div class="breakdown">
+                <p class="breakdown-title">Composição por área</p>
+                <div class="breakdown-row" style="--category-color:#b5d76a">
+                  <span><i></i>Mobilidade</span><b id="rowMobility">0,9 t</b>
+                  <div class="breakdown-bar"><i id="barMobility" style="width:0%"></i></div>
+                </div>
+                <div class="breakdown-row" style="--category-color:#cc9b48">
+                  <span><i></i>Energia</span><b id="rowEnergy">0,3 t</b>
+                  <div class="breakdown-bar"><i id="barEnergy" style="width:0%"></i></div>
+                </div>
+                <div class="breakdown-row" style="--category-color:#bc6f4c">
+                  <span><i></i>Alimentação</span><b id="rowDiet">1,0 t</b>
+                  <div class="breakdown-bar"><i id="barDiet" style="width:0%"></i></div>
+                </div>
+                <div class="breakdown-row" style="--category-color:#f4f1e8">
+                  <span><i></i>Resíduos</span><b id="rowWaste">0,15 t</b>
+                  <div class="breakdown-bar"><i id="barWaste" style="width:0%"></i></div>
+                </div>
+              </div>
+
+              <p class="results-footnote">Estimativa educativa baseada em fatores médios de emissão para o Brasil (transporte, matriz elétrica, dieta e resíduos). Não substitui um inventário de carbono formal.</p>
+            </aside>
+          </div>
+        </section>
+
+        <section class="method-section" id="metodologia" aria-label="Metodologia">
+          <p class="eyebrow"><span></span>Notas de campo</p>
+          <h2>Como chegamos nesse número</h2>
+          <div class="method-grid">
+            <div class="method-card">
+              <b>Mobilidade</b>
+              <p>Km semanais de carro e transporte público, multiplicados por fatores médios de emissão por km, mais uma estimativa fixa por voo conforme a distância.</p>
+            </div>
+            <div class="method-card">
+              <b>Energia</b>
+              <p>Consumo mensal em kWh dividido pelo número de moradores, aplicando o fator de emissão da matriz elétrica brasileira — majoritariamente hidrelétrica.</p>
+            </div>
+            <div class="method-card">
+              <b>Alimentação</b>
+              <p>Cada padrão alimentar corresponde a uma faixa anual de emissões associada à produção de carne, laticínios e transporte de alimentos.</p>
+            </div>
+            <div class="method-card">
+              <b>Resíduos</b>
+              <p>O nível de separação de recicláveis reduz a fração de lixo destinada a aterros, onde a decomposição gera metano.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <span>© 2026 Rastro Clima — um projeto do Atlas Botânico.</span>
+        <nav>
+          <a href="#calculadora">Calculadora</a>
+          <a href="#metodologia">Metodologia</a>
+        </nav>
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        // ---- fatores de emissão (kg CO2e), valores aproximados de referência brasileira ----
+        var FACTOR_CAR_KM = 0.19;        // kg CO2e por km, carro médio
+        var FACTOR_PUBLIC_KM = 0.06;     // kg CO2e por km, ônibus/metrô médio
+        var FACTOR_KWH = 0.08;           // kg CO2e por kWh, matriz elétrica BR
+        var FLIGHT_KG = { "0": 0, "1": 250, "3": 650, "1long": 900, "4": 1400 };
+        var DIET_KG_YEAR = { alto: 2100, moderado: 1500, vegetariano: 950, vegano: 650 };
+        var WASTE_KG_YEAR = { nenhuma: 320, parcial: 190, completa: 90 };
+        var NATIONAL_AVG_TONS = 2.2;
+        var GAUGE_MAX_TONS = 6; // escala visual do medidor circular
+
+        var form = document.getElementById("carbon-form");
+        var carKm = document.getElementById("carKm");
+        var publicKm = document.getElementById("publicKm");
+        var flights = document.getElementById("flights");
+        var kwh = document.getElementById("kwh");
+        var occupants = document.getElementById("occupants");
+
+        var carKmOut = document.getElementById("carKmOut");
+        var publicKmOut = document.getElementById("publicKmOut");
+
+        var orbit = document.getElementById("orbit");
+        var totalTons = document.getElementById("totalTons");
+        var statusText = document.getElementById("statusText");
+        var youVsAvg = document.getElementById("youVsAvg");
+        var compareBar = document.getElementById("compareBar");
+        var monthlyKg = document.getElementById("monthlyKg");
+
+        var rows = {
+          mobility: { row: document.getElementById("rowMobility"), bar: document.getElementById("barMobility") },
+          energy: { row: document.getElementById("rowEnergy"), bar: document.getElementById("barEnergy") },
+          diet: { row: document.getElementById("rowDiet"), bar: document.getElementById("barDiet") },
+          waste: { row: document.getElementById("rowWaste"), bar: document.getElementById("barWaste") }
+        };
+
+        function fmtTons(kgYear) {
+          return (kgYear / 1000).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+        }
+
+        function getDiet() {
+          var el = form.querySelector('input[name="diet"]:checked');
+          return el ? el.value : "moderado";
+        }
+        function getRecycle() {
+          var el = form.querySelector('input[name="recycle"]:checked');
+          return el ? el.value : "parcial";
+        }
+
+        function updateRangeFill(input) {
+          var min = Number(input.min), max = Number(input.max), val = Number(input.value);
+          var pct = ((val - min) / (max - min)) * 100;
+          input.style.setProperty("--progress", pct + "%");
+        }
+
+        function calculate() {
+          var carKmVal = Number(carKm.value);
+          var publicKmVal = Number(publicKm.value);
+          var occ = Math.max(1, Number(occupants.value) || 1);
+          var kwhVal = Math.max(0, Number(kwh.value) || 0);
+
+          var mobilityKg = (carKmVal * 52 * FACTOR_CAR_KM) + (publicKmVal * 52 * FACTOR_PUBLIC_KM) + (FLIGHT_KG[flights.value] || 0);
+          var energyKg = (kwhVal / occ) * 12 * FACTOR_KWH;
+          var dietKg = DIET_KG_YEAR[getDiet()];
+          var wasteKg = WASTE_KG_YEAR[getRecycle()];
+
+          var totalKg = mobilityKg + energyKg + dietKg + wasteKg;
+          var totalTonsVal = totalKg / 1000;
+
+          // medidor circular
+          var gaugePct = Math.min(100, (totalTonsVal / GAUGE_MAX_TONS) * 100);
+          orbit.style.setProperty("--progress", gaugePct.toFixed(1) + "%");
+          totalTons.textContent = totalTonsVal.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+          // comparação com a média nacional
+          var vsAvgPct = Math.round((totalTonsVal / NATIONAL_AVG_TONS) * 100);
+          youVsAvg.textContent = vsAvgPct + "%";
+          compareBar.style.width = Math.min(100, vsAvgPct / 2) + "%";
+
+          monthlyKg.textContent = Math.round(totalKg / 12).toLocaleString("pt-BR") + " kg";
+
+          // mensagem de status
+          var diff = totalTonsVal - NATIONAL_AVG_TONS;
+          var biggest = Object.keys({ mobilidade: mobilityKg, energia: energyKg, alimentação: dietKg, resíduos: wasteKg })
+            .reduce(function (a, b) {
+              var vals = { mobilidade: mobilityKg, energia: energyKg, alimentação: dietKg, resíduos: wasteKg };
+              return vals[a] > vals[b] ? a : b;
+            });
+          if (diff > 0.3) {
+            statusText.textContent = "Acima da média nacional — a maior fatia vem de " + biggest + ".";
+          } else if (diff < -0.3) {
+            statusText.textContent = "Abaixo da média nacional. Bom trabalho — " + biggest + " ainda é sua maior fatia.";
+          } else {
+            statusText.textContent = "Bem próximo da média nacional, com " + biggest + " à frente das demais áreas.";
+          }
+
+          // detalhamento por categoria
+          var maxRow = Math.max(mobilityKg, energyKg, dietKg, wasteKg, 1);
+          rows.mobility.row.textContent = fmtTons(mobilityKg) + " t";
+          rows.mobility.bar.style.width = (mobilityKg / maxRow) * 100 + "%";
+          rows.energy.row.textContent = fmtTons(energyKg) + " t";
+          rows.energy.bar.style.width = (energyKg / maxRow) * 100 + "%";
+          rows.diet.row.textContent = fmtTons(dietKg) + " t";
+          rows.diet.bar.style.width = (dietKg / maxRow) * 100 + "%";
+          rows.waste.row.textContent = fmtTons(wasteKg) + " t";
+          rows.waste.bar.style.width = (wasteKg / maxRow) * 100 + "%";
+        }
+
+        function refreshOutputs() {
+          carKmOut.textContent = carKm.value + " km";
+          publicKmOut.textContent = publicKm.value + " km";
+          updateRangeFill(carKm);
+          updateRangeFill(publicKm);
+        }
+
+        function onAnyChange() {
+          refreshOutputs();
+          calculate();
+        }
+
+        form.addEventListener("input", onAnyChange);
+        form.addEventListener("change", onAnyChange);
+
+        // presets de perfil
+        var presets = {
+          urbano: { carKm: 0, publicKm: 120, flights: "0", kwh: 140, occupants: 1, diet: "vegetariano", recycle: "completa" },
+          medio: { carKm: 80, publicKm: 40, flights: "1", kwh: 220, occupants: 2, diet: "moderado", recycle: "parcial" },
+          rural: { carKm: 250, publicKm: 0, flights: "0", kwh: 320, occupants: 3, diet: "alto", recycle: "nenhuma" }
+        };
+
+        document.querySelectorAll(".preset").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var p = presets[btn.dataset.preset];
+            if (!p) return;
+            document.querySelectorAll(".preset").forEach(function (b) { b.classList.remove("is-active"); });
+            btn.classList.add("is-active");
+
+            carKm.value = p.carKm;
+            publicKm.value = p.publicKm;
+            flights.value = p.flights;
+            kwh.value = p.kwh;
+            occupants.value = p.occupants;
+            form.querySelector('input[name="diet"][value="' + p.diet + '"]').checked = true;
+            form.querySelector('input[name="recycle"][value="' + p.recycle + '"]').checked = true;
+
+            onAnyChange();
+          });
+        });
+
+        // redefinir
+        document.getElementById("resetBtn").addEventListener("click", function () {
+          form.reset();
+          document.querySelectorAll(".preset").forEach(function (b) { b.classList.remove("is-active"); });
+          onAnyChange();
+        });
+
+        // inicialização
+        refreshOutputs();
+        calculate();
+      })();
+    </script>
+  </body>
+</html>
