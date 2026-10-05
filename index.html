@@ -123,6 +123,17 @@
       .comparison small { grid-column: 1/-1; color: #dfe9d4; font-size: 9px; }
       .annual-total { display: flex; align-items: baseline; justify-content: space-between; padding: 12px 0; color: #dfe9d4; font-size: 10px; position: relative; z-index: 1; }
       .annual-total b { color: #fff; font: 23px/1 "DM Serif Display", Georgia, serif; }
+      .share-button { width: 100%; margin: 8px 0 16px;padding: 11px 14px;border: 1px solid rgba(255,255,255,.45);border-radius: 4px;background: transparent;color: #fff;font-size: 11px;font-weight: 800;cursor: pointer;transition: all 160ms var(--ease-out);}
+
+.share-button:hover {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: var(--atlas);
+}
+
+.share-button:active {
+  transform: scale(.98);
+}
       .breakdown { padding-top: 7px; position: relative; z-index: 1; }
       .breakdown-title { color: var(--lime); font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
       .breakdown-row { display: grid; grid-template-columns: 1fr auto; column-gap: 9px; margin: 10px 0; color: #e8eee0; font-size: 10px; align-items: center; }
@@ -349,6 +360,10 @@
                 <b id="monthlyKg">198 kg</b>
               </div>
 
+              <button class="share-button" type="button" id="shareBtn">
+                 Compartilhar meu resultado
+              </button>
+
               <div class="breakdown">
                 <p class="breakdown-title">Composição por área</p>
                 <div class="breakdown-row" style="--category-color:#b5d76a">
@@ -563,6 +578,33 @@
           form.reset();
           document.querySelectorAll(".preset").forEach(function (b) { b.classList.remove("is-active"); });
           onAnyChange();
+        });
+        
+        // compartilhar resultado
+        document.getElementById("shareBtn").addEventListener("click", async function () {
+          var result = "Minha pegada de carbono anual é de " + totalTons.textContent + " toneladas de CO₂e.";
+
+          if (navigator.share) {
+            try {
+              await navigator.share({
+              title: "Minha pegada de carbono",
+              text: result
+              });
+            } catch (error) {
+              // O usuário pode ter cancelado o compartilhamento.
+            }
+          } else {
+            try {
+              await navigator.clipboard.writeText(result);
+              this.textContent = "Resultado copiado!";
+      
+              setTimeout(function () {
+                document.getElementById("shareBtn").textContent = "Compartilhar meu resultado";
+              }, 2000);
+            } catch (error) {
+              alert(result);
+            }
+          }
         });
 
         // inicialização
