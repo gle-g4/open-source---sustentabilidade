@@ -539,11 +539,20 @@
           rural: { carKm: 250, publicKm: 0, flights: "0", kwh: 320, occupants: 3, diet: "alto", recycle: "nenhuma" }
         };
 
+        function clearActivePreset() {
+          document.querySelectorAll(".preset").forEach(function (b) { b.classList.remove("is-active"); });
+        }
+
+        // qualquer edição manual no formulário deixa de corresponder ao preset escolhido
+        // (aplicar um preset altera os valores por código e não dispara esses eventos)
+        form.addEventListener("input", clearActivePreset);
+        form.addEventListener("change", clearActivePreset);
+
         document.querySelectorAll(".preset").forEach(function (btn) {
           btn.addEventListener("click", function () {
             var p = presets[btn.dataset.preset];
             if (!p) return;
-            document.querySelectorAll(".preset").forEach(function (b) { b.classList.remove("is-active"); });
+            clearActivePreset();
             btn.classList.add("is-active");
 
             carKm.value = p.carKm;
@@ -561,7 +570,7 @@
         // redefinir
         document.getElementById("resetBtn").addEventListener("click", function () {
           form.reset();
-          document.querySelectorAll(".preset").forEach(function (b) { b.classList.remove("is-active"); });
+          clearActivePreset();
           onAnyChange();
         });
 
