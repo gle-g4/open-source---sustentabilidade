@@ -22,6 +22,26 @@
       img { max-width: 100%; }
       .page-shell { overflow: hidden; min-width: 320px; background: radial-gradient(circle at 16% 18%, rgba(181,215,106,.12) 0 1px, transparent 1.5px) 0 0 / 14px 14px, var(--paper); }
 
+
+
+              // redefinir formulário com confirmação
+        document.getElementById("resetBtn").addEventListener("click", function () {
+          var confirmarReset = window.confirm(
+            "Deseja realmente limpar os dados da calculadora e restaurar os valores iniciais?"
+          );
+
+          if (!confirmarReset) {
+            return;
+          }
+
+          form.reset();
+
+          document.querySelectorAll(".preset").forEach(function (b) {
+            b.classList.remove("is-active");
+          });
+
+          onAnyChange();
+        });
       /* header */
       .site-header { min-height: 76px; width: min(1180px, calc(100% - 48px)); margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; position: relative; z-index: 5; }
       .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--atlas); text-decoration: none; letter-spacing: -.06em; }
