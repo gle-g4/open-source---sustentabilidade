@@ -1,0 +1,2085 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seminário Open Source — Rastro Clima</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --atlas: #24533b;
+        --atlas-deep: #163124;
+        --paper: #f4f1e8;
+        --paper-light: #fbfaf6;
+        --moss: #5f8568;
+        --lime: #b5d76a;
+        --clay: #bc6f4c;
+        --clay-soft: #f9ede6;
+        --gold: #cc9b48;
+        --gold-soft: #fbf4e3;
+        --line: #d9dfcf;
+        --muted: #5a665d;
+        --merged: #6f42c1;
+        --merged-soft: #f2ecfb;
+        --code-bg: #151b23;
+        --code-line: #27313d;
+        --ease: cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: #10241a;
+        color: var(--atlas-deep);
+        font-family: "Manrope", system-ui, -apple-system, sans-serif;
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ===== Stage & Deck ===== */
+      .deck-viewport {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 18px 18px 66px;
+        background:
+          radial-gradient(circle at 12% 10%, rgba(181, 215, 106, 0.12), transparent 42%),
+          radial-gradient(circle at 88% 90%, rgba(188, 111, 76, 0.14), transparent 45%),
+          #10241a;
+      }
+
+      .stage {
+        position: relative;
+        width: min(100%, calc((100vh - 84px) * 16 / 9));
+        aspect-ratio: 16 / 9;
+        max-height: calc(100vh - 84px);
+        background: var(--paper);
+        border-radius: 14px;
+        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 36px 46px 28px;
+        background:
+          radial-gradient(circle at 16% 18%, rgba(181, 215, 106, 0.12) 0 1px, transparent 1.5px) 0 0 / 16px 16px,
+          var(--paper);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(28px);
+        transition: opacity 320ms var(--ease), transform 360ms var(--ease);
+        overflow: hidden;
+      }
+
+      .slide.is-active {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0);
+        z-index: 2;
+      }
+
+      .slide.is-prev {
+        opacity: 0;
+        transform: translateX(-28px);
+      }
+
+      .slide--dark {
+        background:
+          radial-gradient(circle at 84% 18%, rgba(181, 215, 106, 0.14), transparent 42%),
+          linear-gradient(145deg, #275a40 0%, #1b3f2d 55%, #122a1e 100%);
+        color: #f4f1e8;
+      }
+
+      /* ===== Slide Header ===== */
+      .slide-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 18px;
+        flex: none;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 6px;
+        color: var(--moss);
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 20px;
+        height: 1.5px;
+        background: currentColor;
+      }
+
+      .slide--dark .eyebrow {
+        color: var(--lime);
+      }
+
+      .slide-title {
+        margin: 0;
+        font-family: "DM Serif Display", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(24px, 2.55vw, 35px);
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        color: var(--atlas);
+      }
+
+      .slide-title i {
+        color: var(--clay);
+        font-style: italic;
+      }
+
+      .slide--dark .slide-title {
+        color: #fff;
+      }
+
+      .slide--dark .slide-title i {
+        color: var(--lime);
+      }
+
+      .slide-tag {
+        flex: none;
+        padding: 5px 11px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--paper-light);
+        color: var(--atlas);
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .slide-tag--focus {
+        background: var(--atlas);
+        border-color: var(--atlas);
+        color: var(--lime);
+      }
+
+      .slide--dark .slide-tag {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.22);
+        color: var(--lime);
+      }
+
+      /* ===== Slide Body Layouts ===== */
+      .slide-body {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .cols-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+        flex: 1;
+        min-height: 0;
+        align-items: stretch;
+      }
+
+      .cols-split {
+        display: grid;
+        grid-template-columns: 0.92fr 1.08fr;
+        gap: 24px;
+        flex: 1;
+        min-height: 0;
+        align-items: stretch;
+      }
+
+      .cols-split-wide-left {
+        display: grid;
+        grid-template-columns: 1.12fr 0.88fr;
+        gap: 22px;
+        flex: 1;
+        min-height: 0;
+        align-items: stretch;
+      }
+
+      /* ===== Cards, Lists, Pills ===== */
+      .card {
+        background: var(--paper-light);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
+      .card--atlas {
+        background: var(--atlas);
+        border-color: var(--atlas);
+        color: #f4f1e8;
+      }
+
+      .card--accent {
+        border-left: 4px solid var(--atlas);
+      }
+
+      .card--clay {
+        border-left: 4px solid var(--clay);
+        background: #fffaf7;
+      }
+
+      .card--merged {
+        border-left: 4px solid var(--merged);
+      }
+
+      .card h3 {
+        margin: 0 0 8px;
+        font-family: "DM Serif Display", Georgia, serif;
+        font-weight: 400;
+        font-size: 19px;
+        line-height: 1.15;
+        color: var(--atlas);
+      }
+
+      .card--atlas h3 {
+        color: #fff;
+      }
+
+      .card p {
+        margin: 0 0 8px;
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: var(--atlas-deep);
+      }
+
+      .card--atlas p {
+        color: #e2ebd8;
+      }
+
+      .bullet-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+
+      .bullet-list li {
+        position: relative;
+        padding-left: 16px;
+        font-size: 12.6px;
+        line-height: 1.46;
+        color: var(--atlas-deep);
+      }
+
+      .bullet-list li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 7px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--moss);
+      }
+
+      .bullet-list--clay li::before {
+        background: var(--clay);
+      }
+
+      .bullet-list--lime li {
+        color: #edf3e5;
+      }
+
+      .bullet-list--lime li::before {
+        background: var(--lime);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2px 9px;
+        border-radius: 999px;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+      }
+
+      .badge--merged {
+        background: var(--merged-soft);
+        color: var(--merged);
+        border: 1px solid rgba(111, 66, 193, 0.25);
+      }
+
+      .badge--ok {
+        background: #e6f2d8;
+        color: var(--atlas);
+        border: 1px solid #c3dca5;
+      }
+
+      .badge--warn {
+        background: var(--clay-soft);
+        color: #9b4824;
+        border: 1px solid #ebc6b4;
+      }
+
+      .badge--backlog {
+        background: #ecefe7;
+        color: #526155;
+        border: 1px solid #d5dcd0;
+      }
+
+      .badge--todo {
+        background: var(--gold-soft);
+        color: #8a5e14;
+        border: 1px dashed var(--gold);
+      }
+
+      code {
+        font-family: "JetBrains Mono", Consolas, monospace;
+        font-size: 0.88em;
+        padding: 1px 5px;
+        border-radius: 4px;
+        background: rgba(36, 83, 59, 0.09);
+        color: var(--atlas);
+      }
+
+      .slide--dark code,
+      .card--atlas code {
+        background: rgba(255, 255, 255, 0.14);
+        color: var(--lime);
+      }
+
+      /* ===== Screenshot Frames ===== */
+      .shot-frame {
+        position: relative;
+        background: var(--paper-light);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-height: 0;
+        box-shadow: 7px 8px 0 rgba(36, 83, 59, 0.11);
+        overflow: hidden;
+      }
+
+      .shot-frame--dark {
+        background: #0f161f;
+        border-color: #273342;
+      }
+
+      .shot-img-wrap {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 6px;
+        background: #0d1117;
+        cursor: zoom-in;
+      }
+
+      .shot-img-wrap--light {
+        background: #fbfaf6;
+      }
+
+      .shot-img-wrap img {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+        transition: transform 220ms var(--ease);
+      }
+
+      .shot-img-wrap:hover img {
+        transform: scale(1.015);
+      }
+
+      .shot-caption {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--muted);
+        padding: 0 2px;
+        flex: none;
+      }
+
+      .shot-frame--dark .shot-caption {
+        color: #9cb0c7;
+      }
+
+      .zoom-hint {
+        font-size: 9.5px;
+        opacity: 0.75;
+        font-weight: 600;
+      }
+
+      /* ===== Tables ===== */
+      .qa-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11.4px;
+        background: var(--paper-light);
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+      }
+
+      .qa-table th {
+        text-align: left;
+        padding: 8px 10px;
+        background: var(--atlas);
+        color: #f4f1e8;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .qa-table td {
+        padding: 7px 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: middle;
+        line-height: 1.35;
+      }
+
+      .qa-table tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .qa-table tr.is-highlight td {
+        background: #eef5e3;
+      }
+
+      /* ===== Code Diff Box (Slide 9) ===== */
+      .diff-box {
+        background: var(--code-bg);
+        color: #e6edf3;
+        border-radius: 8px;
+        border: 1px solid var(--code-line);
+        font-family: "JetBrains Mono", Consolas, monospace;
+        font-size: 10.2px;
+        line-height: 1.48;
+        overflow: hidden;
+        margin-top: 8px;
+      }
+
+      .diff-box__head {
+        background: #1f2733;
+        color: #9cb0c7;
+        padding: 5px 10px;
+        font-size: 9.8px;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--code-line);
+      }
+
+      .diff-box pre {
+        margin: 0;
+        padding: 8px 10px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .diff-add {
+        display: block;
+        background: rgba(46, 160, 67, 0.18);
+        color: #aff5b4;
+        padding: 0 4px;
+        margin: 0 -4px;
+      }
+
+      .diff-err {
+        display: block;
+        background: rgba(248, 81, 73, 0.24);
+        color: #ffdcd7;
+        padding: 0 4px;
+        margin: 0 -4px;
+        border-left: 2px solid #f85149;
+      }
+
+      .diff-dim {
+        color: #7d8b99;
+      }
+
+      /* ===== Flow Pipeline (Slide 6) ===== */
+      .pipeline {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        align-items: stretch;
+      }
+
+      .pipe-step {
+        position: relative;
+        background: var(--paper-light);
+        border: 1px solid var(--line);
+        border-top: 3px solid var(--atlas);
+        border-radius: 8px;
+        padding: 10px 11px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .pipe-step--decision {
+        background: var(--atlas);
+        border-color: var(--atlas);
+        border-top-color: var(--lime);
+        color: #f4f1e8;
+      }
+
+      .pipe-num {
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        color: var(--moss);
+        text-transform: uppercase;
+      }
+
+      .pipe-step--decision .pipe-num {
+        color: var(--lime);
+      }
+
+      .pipe-step b {
+        font-size: 12.2px;
+        color: var(--atlas-deep);
+      }
+
+      .pipe-step--decision b {
+        color: #fff;
+      }
+
+      .pipe-step small {
+        font-size: 10.5px;
+        line-height: 1.35;
+        color: var(--muted);
+      }
+
+      .pipe-step--decision small {
+        color: #dce7d2;
+      }
+
+      /* ===== KPI Strip (Slide 10) ===== */
+      .kpi-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+
+      .kpi {
+        background: var(--paper-light);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .kpi strong {
+        font-family: "DM Serif Display", Georgia, serif;
+        font-size: 32px;
+        line-height: 1;
+        color: var(--atlas);
+        font-weight: 400;
+      }
+
+      .kpi--clay strong {
+        color: var(--clay);
+      }
+
+      .kpi--merged strong {
+        color: var(--merged);
+      }
+
+      .kpi span {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        text-align: right;
+        line-height: 1.25;
+      }
+
+      /* ===== Cover Slide Specifics ===== */
+      .cover-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 28px;
+        flex: 1;
+        min-height: 0;
+        align-items: center;
+      }
+
+      .cover-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      .cover-brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--lime);
+        color: var(--atlas-deep);
+        display: grid;
+        place-items: center;
+      }
+
+      .cover-brand-text {
+        font-family: "DM Serif Display", Georgia, serif;
+        font-size: 22px;
+        color: #fff;
+        line-height: 1;
+      }
+
+      .cover-brand-text small {
+        display: block;
+        font-family: "Manrope", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--lime);
+        margin-top: 3px;
+      }
+
+      .cover-h1 {
+        margin: 0 0 14px;
+        font-family: "DM Serif Display", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(32px, 3.6vw, 48px);
+        line-height: 1.03;
+        letter-spacing: -0.025em;
+        color: #fff;
+      }
+
+      .cover-h1 i {
+        color: var(--lime);
+        font-style: italic;
+      }
+
+      .cover-sub {
+        margin: 0 0 22px;
+        font-size: 14.5px;
+        line-height: 1.55;
+        color: #d6e4cd;
+      }
+
+      .cover-meta {
+        display: grid;
+        gap: 8px;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+        font-size: 11.8px;
+        color: #e8f0e2;
+      }
+
+      .cover-meta strong {
+        color: var(--lime);
+        font-weight: 800;
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-right: 6px;
+      }
+
+      .team-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 4px;
+      }
+
+      .team-chip {
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        font-size: 11px;
+        font-weight: 600;
+        color: #fff;
+      }
+
+      /* ===== Slide Footer ===== */
+      .slide-footer {
+        flex: none;
+        margin-top: 12px;
+        padding-top: 8px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      .slide--dark .slide-footer {
+        border-top-color: rgba(255, 255, 255, 0.16);
+        color: rgba(244, 241, 232, 0.7);
+      }
+
+      /* ===== Bottom Control Bar ===== */
+      .controls {
+        position: fixed;
+        left: 50%;
+        bottom: 12px;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(16, 36, 26, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        backdrop-filter: blur(10px);
+        color: #f4f1e8;
+        z-index: 30;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      .ctrl-btn {
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.06);
+        color: #f4f1e8;
+        padding: 6px 11px;
+        border-radius: 999px;
+        font: 700 11.5px "Manrope", sans-serif;
+        cursor: pointer;
+        transition: all 150ms var(--ease);
+      }
+
+      .ctrl-btn:hover {
+        background: var(--lime);
+        border-color: var(--lime);
+        color: var(--atlas-deep);
+      }
+
+      .ctrl-btn.is-on {
+        background: var(--lime);
+        border-color: var(--lime);
+        color: var(--atlas-deep);
+      }
+
+      .ctrl-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+
+      .ctrl-counter {
+        min-width: 64px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        color: var(--lime);
+      }
+
+      .progress-track {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 31;
+      }
+
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--lime);
+        transition: width 280ms var(--ease);
+      }
+
+      /* ===== Speaker Notes Drawer ===== */
+      .notes-drawer {
+        position: fixed;
+        right: 18px;
+        bottom: 66px;
+        width: min(460px, calc(100vw - 36px));
+        max-height: 36vh;
+        overflow-y: auto;
+        background: rgba(16, 36, 26, 0.96);
+        color: #edf3e5;
+        border: 1px solid rgba(181, 215, 106, 0.35);
+        border-radius: 12px;
+        padding: 14px 16px;
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+        z-index: 40;
+        display: none;
+      }
+
+      .notes-drawer.is-open {
+        display: block;
+      }
+
+      .notes-drawer h4 {
+        margin: 0 0 8px;
+        font-size: 10.5px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--lime);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .notes-drawer p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.58;
+        color: #f4f1e8;
+      }
+
+      /* ===== Overview Modal ===== */
+      .overview-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 22, 16, 0.94);
+        backdrop-filter: blur(8px);
+        z-index: 50;
+        display: none;
+        padding: 32px;
+        overflow-y: auto;
+      }
+
+      .overview-modal.is-open {
+        display: block;
+      }
+
+      .overview-head {
+        max-width: 1120px;
+        margin: 0 auto 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #fff;
+      }
+
+      .overview-head h2 {
+        margin: 0;
+        font-family: "DM Serif Display", Georgia, serif;
+        font-weight: 400;
+        font-size: 28px;
+      }
+
+      .overview-grid {
+        max-width: 1120px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 14px;
+      }
+
+      .overview-item {
+        text-align: left;
+        background: var(--paper-light);
+        border: 2px solid transparent;
+        border-radius: 10px;
+        padding: 14px;
+        cursor: pointer;
+        transition: all 150ms var(--ease);
+      }
+
+      .overview-item:hover,
+      .overview-item.is-current {
+        border-color: var(--lime);
+        transform: translateY(-2px);
+      }
+
+      .overview-item small {
+        display: block;
+        color: var(--moss);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+
+      .overview-item b {
+        display: block;
+        color: var(--atlas);
+        font-size: 13.5px;
+        line-height: 1.3;
+      }
+
+      /* ===== Lightbox ===== */
+      .lightbox {
+        position: fixed;
+        inset: 0;
+        background: rgba(8, 16, 12, 0.94);
+        z-index: 60;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 28px;
+        cursor: zoom-out;
+      }
+
+      .lightbox.is-open {
+        display: flex;
+      }
+
+      .lightbox img {
+        max-width: 94vw;
+        max-height: 84vh;
+        border-radius: 8px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      }
+
+      .lightbox-cap {
+        margin-top: 12px;
+        color: #dce7d2;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      /* ===== Print / Export PDF ===== */
+      @page {
+        size: 1280px 720px;
+        margin: 0;
+      }
+
+      @media print {
+        html,
+        body {
+          overflow: visible;
+          background: #fff;
+          height: auto;
+        }
+        .controls,
+        .progress-track,
+        .notes-drawer,
+        .overview-modal,
+        .lightbox {
+          display: none !important;
+        }
+        .deck-viewport {
+          display: block;
+          padding: 0;
+          width: auto;
+          height: auto;
+          background: #fff;
+        }
+        .stage {
+          width: 1280px;
+          height: auto;
+          max-height: none;
+          aspect-ratio: auto;
+          box-shadow: none;
+          border-radius: 0;
+          overflow: visible;
+          background: transparent;
+        }
+        .slide {
+          position: relative !important;
+          opacity: 1 !important;
+          transform: none !important;
+          pointer-events: auto !important;
+          width: 1280px;
+          height: 720px;
+          page-break-after: always;
+          break-after: page;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="deck-viewport">
+      <div class="stage" id="stage">
+        <!-- ==================== SLIDE 1: CAPA ==================== -->
+        <section
+          class="slide slide--dark is-active"
+          data-title="Capa — Rastro Clima"
+          data-notes="Olá a todos! Hoje vamos compartilhar a nossa experiência com o projeto Rastro Clima na disciplina de Open Source. Além de mostrar o que construímos e o que propusemos aos outros grupos, vamos detalhar como atuamos como mantenedores e QA na avaliação das contribuições recebidas via Issues e Pull Requests."
+        >
+          <div class="cover-grid">
+            <div>
+              <div class="cover-brand">
+                <span class="cover-brand-mark" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 21c-4-3-7-7-7-11a7 7 0 0 1 14 0c0 4-3 8-7 11Z"
+                      stroke="#163124"
+                      stroke-width="1.8"
+                    />
+                    <path
+                      d="M12 6v9M12 9l-2.5-2M12 12l3-2.2"
+                      stroke="#163124"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </span>
+                <div class="cover-brand-text">
+                  Rastro Clima
+                  <small>Open Source • UniFECAF</small>
+                </div>
+              </div>
+
+              <h1 class="cover-h1">Colaboração <i>Open Source</i> na prática.</h1>
+              <p class="cover-sub">
+                Da criação de uma calculadora brasileira de pegada de carbono à revisão técnica (QA) das contribuições recebidas da turma.
+              </p>
+
+              <div class="cover-meta">
+                <div><strong>Disciplina</strong> Open Source Contribution &amp; Collaboration — Prof. Robson Cardoso</div>
+                <div><strong>Data</strong> 23/11/2026 &nbsp;·&nbsp; <strong>Repo</strong> <code>gle-g4/open-source---sustentabilidade</code></div>
+                <div>
+                  <strong>Grupo Rastro Clima</strong>
+                  <div class="team-chips">
+                    <span class="team-chip">João V. Souza · 111867</span>
+                    <span class="team-chip">Gleice Oliveira · 89244</span>
+                    <span class="team-chip">Héricles Lima · 90121</span>
+                    <span class="team-chip">Julia Helena · 78848</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="shot-frame" style="height: 82%; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2)">
+              <div class="shot-img-wrap shot-img-wrap--light">
+                <img src="image.png" alt="Tela inicial do projeto Rastro Clima" />
+              </div>
+              <div class="shot-caption" style="color: #dce7d2">
+                <span>gle-g4.github.io/open-source---sustentabilidade</span>
+                <span class="zoom-hint">clique para ampliar</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer">
+            <span>Seminário Final — Rastro Clima</span>
+            <span>01 / 12</span>
+          </div>
+        </section>
+
+        <!-- ==================== SLIDE 2: COLABORAÇÃO ==================== -->
+        <section
+          class="slide"
+          data-title="1. O que entendemos por colaboração?"
+          data-notes="Antes da disciplina, muita gente associa open source apenas a deixar um código aberto no GitHub. Na prática, entendemos que colaboração é uma conversa técnica documentada: envolve escutar sugestões, manter o projeto estável, aceitar melhorias reais e também saber pedir ajustes de forma construtiva quando um código ainda não está pronto para entrar na branch principal."
+        >
+          <div class="slide-header">
+            <div>
+              <p class="eyebrow">Questão 1 • Conceito na prática</p>
+              <h2 class="slide-title">O que o grupo entende por <i>colaboração</i>?</h2>
+            </div>
+            <span class="slide-tag">Cultura Open Source</span>
+          </div>
+
+          <div class="cols-split">
+            <div style="display: flex; flex-direction: column; gap: 11px; justify-content: space-between">
+              <div class="card card--accent">
+                <h3>Mais do que "código público"</h3>
+                <p>Colaborar exige regras claras, respeito à arquitetura do projeto e responsabilidade compartilhada sobre a versão principal.</p>
+              </div>
+              <div class="card card--accent">
+                <h3>Conversa técnica documentada</h3>
+                <p>Issues bem descritas para reportar problemas + Pull Requests pequenos, focados, testados e explicados.</p>
+              </div>
+              <div class="card card--accent">
+                <h3>Mão dupla com proteção à qualidade</h3>
+                <p>Contribuir em projetos alheios e revisar contribuições recebidas com critério técnico e empatia — sabendo <strong>aprovar</strong> e <strong>pedir ajustes</strong>.</p>
+              </div>
+            </div>
+
+            <div class="shot-frame shot-frame--dark">
+              <div class="shot-img-wrap">
+                <img src="image-1.png" alt="Aba Pull Requests do repositório no GitHub" />
+              </div>
+              <div class="shot-caption">
+                <span>Histórico real de Pull Requests no GitHub (5 integrados, 2 em revisão)</span>
+                <span class="zoom-hint">clique para ampliar</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer">
+            <span>Rastro Clima · Open Source Contribution &amp; Collaboration</span>
+            <span>02 / 12</span>
+          </div>
+        </section>
+
+        <!-- ==================== SLIDE 3: O PROJETO ==================== -->
+        <section
+          class="slide"
+          data-title="2. Qual projeto criamos? — Rastro Clima"
+          data-notes="Criamos o Rastro Clima, uma calculadora de pegada de carbono pessoal adaptada à realidade brasileira — considerando nossa matriz elétrica majoritariamente hidrelétrica. Nossa motivação é direta: conhecer a nossa pegada de carbono é o primeiro passo para reduzi-la. Escolhemos uma arquitetura intencionalmente simples: tudo em um único index.html, sem servidor ou dependências externas. Essa escolha guiou todas as decisões de revisão das contribuições."
+        >
+          <div class="slide-header">
+            <div>
+              <p class="eyebrow">Questão 2 • Nosso Projeto</p>
+              <h2 class="slide-title">Rastro Clima — <i>pegada de carbono</i> pessoal</h2>
+            </div>
+            <span class="slide-tag">Página única • Zero build</span>
+          </div>
+
+          <div class="cols-split">
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div class="card card--atlas">
+                <h3>Por que criamos?</h3>
+                <p style="font-size: 14px; font-style: italic; color: var(--lime); margin-bottom: 4px">
+                  “Conhecer a nossa pegada de carbono é o primeiro passo para reduzi-la.”
+                </p>
+                <p style="margin: 0">Ferramenta educativa com fatores de emissão adaptados à realidade brasileira (média nacional de <strong>2,2 t CO₂e/pessoa/ano</strong>).</p>
+              </div>
+
+              <div class="card" style="flex: 1">
+                <h3>Arquitetura &amp; Funcionalidades</h3>
+                <ul class="bullet-list">
+                  <li><strong>Arquivo único:</strong> <code>index.html</code> (HTML + CSS + JS puros), tema <em>Atlas Botânico</em>, roda no GitHub Pages ou localmente via <code>file://</code>.</li>
+                  <li><strong>4 pilares:</strong> Mobilidade, Energia doméstica, Alimentação e Resíduos.</li>
+                  <li><strong>Painel em tempo real:</strong> total anual, média mensal (<code>kg/mês</code>), comparativo com a média BR e barras proporcionais.</li>
+                  <li><strong>Atalhos rápidos:</strong> 3 perfis pré-definidos + botão de redefinir.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="shot-frame">
+              <div class="shot-img-wrap shot-img-wrap--light">
+                <img src="image-2.png" alt="Calculadora Rastro Clima em funcionamento" />
+              </div>
+              <div class="shot-caption">
+                <span>Formulário em 4 blocos + painel lateral em tempo real (já com botão Compartilhar)</span>
+                <span class="zoom-hint">clique para ampliar</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer">
+            <span>Rastro Clima · Open Source Contribution &amp; Collaboration</span>
+            <span>03 / 12</span>
+          </div>
+        </section>
+
+        <!-- ==================== SLIDE 4: EVOLUÇÃO INTERNA & PR #2 ==================== -->
+        <section
+          class="slide"
+          data-title="3A. Evolução interna e a lição do PR #2"
+          data-notes="Logo no início do projeto já tivemos um aprendizado prático importante: nos primeiros PRs integrados (#1 e #2), uma alteração simples de uma linha acabou trocando o título da aba do navegador para 'Calculadora de pegada de carbono ultra pro max', tirando o nome Rastro Clima. Isso nos mostrou, na prática, por que precisávamos estabelecer um processo formal de QA antes de aceitar os próximos PRs da turma."
+        >
+          <div class="slide-header">
+            <div>
+              <p class="eyebrow">Questão 3A • Melhorias próprias &amp; aprendizado inicial</p>
+              <h2 class="slide-title">Evolução inicial e a <i>lição</i> dos primeiros PRs</h2>
+            </div>
+            <span class="slide-tag slide-tag--focus">Foco Principal</span>
+          </div>
+
+          <div class="cols-split">
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div class="card">
+                <h3>Melhorias estruturais feitas pelo grupo</h3>
+                <ul class="bullet-list">
+                  <li>Publicação contínua via <strong>GitHub Pages</strong> e documentação inicial da metodologia no <code>readme.md</code>.</li>
+                  <li>Organização da pasta <code>Docs/</code> com o histórico das atividades e issues registradas.</li>
+                </ul>
+              </div>
+
+              <div class="card card--clay">
+                <h3>O alerta dos PRs iniciais (<code>#1</code> e <code>#2</code>)</h3>
+                <ul class="bullet-list bullet-list--clay">
+                  <li>Alteraram apenas 1 linha (<code>&lt;title&gt;</code>), mas o PR <code>#2</code> trocou a marca para <em>“Calculadora de pegada de carbono ultra pro max”</em>.</li>
+                  <li><strong>Aprendizado:</strong> até mudanças de 1 linha exigem revisão de escopo e identidade antes do merge.</li>
+                </ul>
+              </div>
+
+              <div class="card" style="padding: 12px 16px">
+                <p style="margin: 0; font-size: 11.8px">
+                  <strong>Backlog interno mapeado:</strong> restaurar <code>&lt;title&gt;</code> com a marca Rastro Clima, corrigir typo <code>"comprosto"</code> → <code>"composto"</code>, unificar contraste do foco global e definir arquivo <code>LICENSE</code>.
+                </p>
+              </div>
+            </div>
+
+            <div class="shot-frame shot-frame--dark">
+              <div class="shot-img-wrap">
+                <img src="image-3.png" alt="Diff do PR #2 alterando o title no index.html" />
+              </div>
+              <div class="shot-caption">
+                <span>PR #2 (Merged): exemplo real de por que precisamos de critérios de QA</span>
+                <span class="zoom-hint">clique para ampliar</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer">
+            <span>Questão 3 — Contribuições &amp; Melhorias</span>
+            <span>04 / 12</span>
+          </div>
+        </section>
+
+        <!-- ==================== SLIDE 5: ISSUES RECEBIDAS ==================== -->
+        <section
+          class="slide"
+          data-title="3B. Sugestões recebidas via Issues"
+          data-notes="Recebemos 6 propostas de Issues dos colegas. Ao fazer a triagem, agrupamos demandas parecidas: dois grupos sugeriram histórico e comparação de simulações, dois sugeriram exportação em PDF ou imagem, um sugeriu expandir transporte e resíduos com simulador de redução e o grupo Menu viewer encontrou um bug real muito pertinente — o botão de preset continuava ativo após edição manual. Essa Issue 5 foi efetivamente resolvida via PR #11."
+        >
+          <div class="slide-header">
+            <div>
+              <p class="eyebrow">Questão 3B • Triagem de sugestões dos colegas</p>
+              <h2 class="slide-title">6 <i>Issues</i> recebidas de outros grupos</h2>
+            </div>
+            <span class="slide-tag slide-tag--focus">Foco Principal</span>
+          </div>
+
+          <div class="cols-split-wide-left">
+            <div style="display: flex; flex-direction: column; gap: 10px">
+              <table class="qa-table">
+                <thead>
+                  <tr>
+                    <th style="width: 34px">#</th>
+                    <th>Grupo / Autor</th>
+                    <th>Sugestão recebida</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>1</strong></td>
+                    <td>LibraryUnifecaf<br /><small style="color: var(--muted)"><code>LucasSenaBarbosa</code></small></td>
+                    <td>Histórico dos resultados obtidos</td>
+                    <td><span class="badge badge--backlog">Backlog</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>2</strong></td>
+                    <td>Troca troca<br /><small style="color: var(--muted)"><code>QerashosT</code></small></td>
+                    <td>Botão para exportar resumo em PDF</td>
+                    <td><span class="badge badge--backlog">Backlog</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>3</strong></td>
+                    <td>Modus project<br /><small style="color: var(--muted)"><code>K1NSLEY</code></small></td>
+                    <td>Histórico de simulações e comparação de cenários</td>
+                    <td><span class="badge badge--backlog">Backlog</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>4</strong></td>
+                    <td>TrocaTroca<br /><small style="color: var(--muted)"><code>Ian-AS10</code></small></td>
+                    <td>Exportar e compartilhar resultado (PDF/imagem)</td>
+                    <td><span class="badge badge--backlog">Parcial (PR #10)</span></td>
+                  </tr>
+                  <tr class="is-highlight">
+                    <td><strong>5</strong></td>
+                    <td><strong>Menu viewer</strong><br /><small style="color: var(--muted)"><code>ViancoDeviolo</code></small></td>
+                    <td><strong>Bug:</strong> botão de preset continuava ativo após edição manual</td>
+                    <td><span class="badge badge--merged">Resolvida · PR #11</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>6</strong></td>
+                    <td>EcoMap<br /><small style="color: var(--muted)"><code>Gustavo499-max</code></small></td>
+                    <td>Detalhar transporte/resíduos + simulador de redução</td>
+                    <td><span class="badge badge--backlog">Backlog</span></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="card card--accent" style="padding: 10px 14px">
+                <p style="margin: 0; font-size: 11.8px">
+                  <strong>Critério de triagem:</strong> agrupamos demandas semelhantes (Histórico <code>#1+#3</code>; Exportação <code>#2+#4</code>) e priorizamos correções reais e melhorias compatíveis com a arquitetura leve de arquivo único.
+                </p>
+              </div>
+            </div>
+
+            <div class="shot-frame shot-frame--dark">
+              <div class="shot-img-wrap">
+                <img src="image-4.png" alt="Lista de Issues recebidas no GitHub" />
+              </div>
+              <div class="shot-caption">
+                <span>Aba Issues no GitHub (6 issues registradas pelos outros grupos)</span>
+                <span class="zoom-hint">clique para ampliar</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer">
+            <span>Questão 3 — Contribuições &amp; Melhorias</span>
+            <span>05 / 12</span>
+          </div>
+        </section>
+
+        <!-- ==================== SLIDE 6: PROCESSO DE QA ==================== -->
+        <section
+          class="slide"
+          data-title="3C. Nosso Processo de QA para Pull Requests"
+          data-notes="Para não aprovar nada 'no olho', aplicamos um fluxo real de QA: trouxemos cada PR localmente via git fetch, testamos conflitos de merge entre a main e entre os próprios PRs com git merge-tree, validamos sintaxe JavaScript, IDs duplicados, segurança, contraste de acessibilidade WCAG e aderência à proposta do Rastro Clima. Só então emitimos o veredito com feedback detalhado."
+        >
+          <div class="slide-header">
+            <div>
+              <p class="eyebrow">Questão 3C • Metodologia de Avaliação</p>
+              <h2 class="slide-title">Nosso processo de <i>QA</i> antes de aprovar cada PR</h2>
+            </div>
+            <span class="slide-tag slide-tag--focus">Foco Principal</span>
+          </div>
+
+          <div class="slide-body">
+            <div class="pipeline">
+              <div class="pipe-step">
+                <span class="pipe-num">Etapa 01</span>
+                <b>Coleta local</b>
+                <small><code>git fetch origin pull/N/head:pr-N</code> sem alterar a <code>main</code></small>
+              </div>
+              <div class="pipe-step">
+                <span class="pipe-num">Etapa 02</span>
+                <b>Teste de merge</b>
+                <small><code>git merge-tree</code> contra a <code>main</code> e entre os demais PRs</small>
+              </div>
+              <div class="pipe-step">
+                <span class="pipe-num">Etapa 03</span>
+                <b>Análise técnica</b>
+                <small>Diff linha a linha, sintaxe JS, IDs únicos, segurança (XSS) e zero build</small>
+              </div>
+              <div class="pipe-step">
+                <span class="pipe-num">Etapa 04</span>
+                <b>UX &amp; WCAG</b>
+                <small>Cálculos CO₂e, fallback <code>file://</code>, contraste e foco de teclado</small>
+              </div>
+              <div class="pipe-step pipe-step--decision">
+                <span class="pipe-num">Etapa 05</span>
+                <b>Veredito QA</b>
+                <small><strong>Approve</strong> (merge) ou <strong>Request Changes</strong> com checklist objetivo</small>
+              </div>
+            </div>
+
+            <div class="cols-split" style="margin-top: 2px">
+              <div class="card">
+                <h3>Checklist aplicado em todos os 5 PRs</h3>
+                <ul class="bullet-list">
+                  <li><strong>Escopo:</strong> resolve um problema claro sem fugir da proposta do Rastro Clima?</li>
+                  <li><strong>Integridade:</strong> zero erros de sintaxe, tags fechadas, sem conflitos e sem quebrar CSS/JS existente.</li>
+                  <li><strong>Regras de negócio:</strong> preserva fórmulas de CO₂e, presets, reset e funciona online e offline.</li>
+                  <li><strong>Acessibilidade &amp; estilo:</strong> respeita a paleta <em>Atlas Botânico</em> e diretrizes WCAG.</li>
+                </ul>
+              </div>
+
+              <div class="shot-frame shot-frame--dark">
+                <div class="shot-img-wrap">
+                  <img src="image-5.png" alt="Terminal executando git fetch origin pull/13/head:pr-13" />
+                </div>
+                <div class="shot-caption">
+                  <span>Auditoria local: trazendo cada PR diretamente do remoto via git fetch</span>
+                  <span class="zoom-hint">clique para ampliar</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer">
+            <span>Questão 3 — Contribuições &amp; Melhorias</span>
+            <span>06 / 12</span>
+          </div>
+        </section>
+
+        <!-- ==================== SLIDE 7: PRS ACEITOS #9 E #10 ==================== -->
+        <section
+          class="slide"
+          data-title="3D. PRs Aceitos e Integrados — #9 e #10"
+          data-notes="Dos 5 PRs abertos que avaliamos, 3 foram aprovados e já estão mergeados na main — todos sem conflito entre si! O PR #9, do Thiago Fischer, trouxe um ganho real de acessibilidade em apenas 5 linhas: liberou o zoom em celulares removendo maximum-scale=1 e restaurou o foco visível via teclado com contraste de 8,46 para 1. Já o PR #10, do Gustavo Azzola, adicionou o botão Compartilhar meu resultado com fallback em três camadas: Web Share no mobile, cópia para área de transferência no desktop e alert se aberto via file://."
+        >
+          <div class="slide-header">
+            <div>
+              <p class="eyebrow">Questão 3D • Contribuições efetivamente aceitas (1/2)</p>
+              <h2 class="slide-title">PRs <i>aprovados e mergeados</i>: #9 e #10</h2>
+            </div>
+            <span class="badge badge--merged" style="font-size: 11.5px; padding: 6px 12px">Integrados na main</span>
+          </div>
+
+          <div class="cols-2">
+            <!-- PR #9 -->
+            <div class="card card--merged" style="gap: 10px">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+                <h3 style="margin: 0">PR #9 — Acessibilidade (WCAG)</h3>
+                <span class="badge badge--merged">Merged</span>
+              </div>
+              <p style="margin: 0; font-size: 11.5px; color: var(--muted)"><strong>Autor:</strong> Thiago Fischer (<code>thiago-fischer</code>) · <code>+3 / -2</code> linhas</p>
+              <ul class="bullet-list" style="gap: 5px">
+                <li>Removeu <code>maximum-scale=1</code> do <code>viewport</code> (libera zoom mobile — WCAG 1.4.4).</li>
+                <li>Restaurou foco de teclado em <code>#kwh</code>, <code>#occupants</code> e cards de Alimentação/Resíduos com contraste <strong>8,46:1</strong> (<code>var(--atlas)</code>).</li>
+              </ul>
+              <div class="shot-frame shot-frame--dark" style="flex: 1; padding: 6px; box-shadow: none">
+                <div class="shot-img-wrap">
+                  <img src="image-6.png" alt="Diff do PR #9 mergeado no GitHub" />
+                </div>
+                <div class="shot-caption">
+                  <span>PR #9 Merged — diff cirúrgico em index.html</span>
+                  <span class="zoom-hint">ampliar</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- PR #10 -->
+            <div class="card card--merged" style="gap: 10px">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+                <h3 style="margin: 0">PR #10 — Compartilhar resultado</h3>
+                <span class="badge badge--merged">Merged</span>
+              </div>
+              <p style="margin: 0; font-size: 11.5px; color: var(--muted)"><strong>Autor:</strong> Gustavo Azzola (<code>gustavoazzola76261-arch</code>) · <code>+42</code> linhas</p>
+              <ul class="bullet-list" style="gap: 5px">
+                <li>Botão integrado ao visual do painel escuro, sem dependências externas.</li>
+                <li><strong>Degradação graciosa:</strong> <code>navigator.share</code> → <code>clipboard</code> (feedback 2s) → <code>alert</code> local.</li>
+              </ul>
+              <div class="shot-frame" style="flex: 1; padding: 6px; box-shadow: none">
+                <div class="shot-img-wrap shot-img-wrap--light">
+                  <img src="image-7.png" alt="Botão Compartilhar meu resultado no painel de resultados" />
+                </div>
+                <div class="shot-caption">
+                  <span>PR #10 em produção — botão integrado ao painel</span>
+                  <span class="zoom-hint">ampliar</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer">
+            <span>Questão 3 — Contribuições Aceitas (2 de 3)</span>
+            <span>07 / 12</span>
+          </div>
+        </section>
+
+        <!-- ==================== SLIDE 8: PR ACEITO #11 ==================== -->
+        <section
+          class="slide"
+          data-title="3D. PR Aceito e Integrado — #11 (Issue 5)"
+          data-notes="O terceiro PR aprovado e mergeado foi o #11, do Luis Talgatti, que fechou diretamente a Issue 5 aberta pelo grupo Menu viewer. Ele resolveu o bug em que o botão de preset continuava marcado como ativo após edição manual, aproveitando o comportamento nativo do DOM em que alterações programáticas não disparam input ou change, e ainda eliminou duplicação de código com a função clearActivePreset(). Um exemplo de PR pequeno, claro e impecável."
+        >
+          <div class="slide-header">
+            <div>
+              <p class="eyebrow">Questão 3D • Contribuições efetivamente aceitas (2/2)</p>
+              <h2 class="slide-title">PR #11 <i>(Merged)</i> — Resolução exemplar da Issue 5</h2>
+            </div>
+            <span class="badge badge--merged" style="font-size: 11.5px; padding: 6px 12px">Fecha Issue 5</span>
+          </div>
+
+          <div class="cols-split">
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div class="card card--merged">
+                <h3>O problema resolvido (Issue 5)</h3>
+                <p>Após selecionar um atalho de perfil (<em>Urbano</em>, <em>Rotina média</em> ou <em>Casa com carro</em>), o botão permanecia com <code>.is-active</code> mesmo quando o usuário alterava manualmente sliders, energia, dieta ou resíduos.</p>
+              </div>
+
+              <div class="card">
+                <h3>Por que foi aprovado sem ressalvas</h3>
+                <ul class="bullet-list">
+                  <li><strong>Autor:</strong> Luis Talgatti (<code>GustavoTalgatti</code>) · <code>+11 / -2</code> linhas.</li>
+                  <li><strong>Lógica precisa:</strong> listeners <code>input</code> e <code>change</code> no <code>#carbon-form</code> limpam o preset ativo em edições manuais sem interferir no clique dos presets.</li>
+                  <li><strong>Refatoração DRY:</strong> criou <code>clearActivePreset()</code>, eliminando código duplicado em dois pontos.</li>
+                  <li><strong>Zero conflitos:</strong> merge limpo com <code>main</code>, <code>#9</code> e <code>#10</code>.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="shot-frame shot-frame--dark">
+              <div class="shot-img-wrap">
+                <img src="image-8.png" alt="Diff do PR #11 no GitHub mostrando clearActivePreset" />
+              </div>
+              <div class="shot-caption">
+                <span>PR #11 Merged — solução limpa, comentada e aderente ao estilo do projeto</span>
+                <span class="zoom-hint">clique para ampliar</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer">
+            <span>Questão 3 — Contribuições Aceitas (3 de 3)</span>
+            <span>08 / 12</span>
+          </div>
+        </section>
+
+        <!-- ==================== SLIDE 9: PRS EM AJUSTES #12 E #13 ==================== -->
+        <section
+          class="slide"
+          data-title="3E. PRs com Ajustes Solicitados — #12 e #13"
+          data-notes="Já os PRs #12 e #13 foram os momentos em que o papel de QA mais fez diferença. Ambos tinham ótimas intenções — melhorar o README e adicionar confirmação no botão de reset — mas apresentavam defeitos bloqueantes que teriam quebrado o repositório. No #12, havia dois READMEs colados com texto de IA, Markdown quebrado e uma licença MIT apontando para uma busca do Google. No #13, o JavaScript foi colado dentro da tag style, então não executava e ainda quebrava o CSS do cabeçalho. Em ambos usamos Request Changes com checklist claro e respeitoso — hoje os dois seguem aguardando ajustes dos autores."
+        >
+          <div class="slide-header">
+            <div>
+              <p class="eyebrow">Questão 3E • Quando o QA protege o repositório</p>
+              <h2 class="slide-title">PRs com <i>ajustes solicitados</i>: #12 e #13</h2>
+            </div>
+            <span class="badge badge--warn" style="font-size: 11.5px; padding: 6px 12px">Aguardando ajustes dos autores</span>
+          </div>
+
+          <div class="cols-2">
+            <!-- PR #12 -->
+            <div class="card card--clay">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px">
+                <h3 style="margin: 0">PR #12 — Novo <code>readme.md</code></h3>
+                <span class="badge badge--warn">Request Changes</span>
+              </div>
+              <p style="margin: 0 0 8px; font-size: 11.5px; color: var(--muted)"><strong>Autora:</strong> <code>estefanycunha60057-star</code> · Ideia válida, arquivo corrompido</p>
+              <ul class="bullet-list bullet-list--clay" style="gap: 5px">
+                <li><strong>Duplicação + texto de IA:</strong> 2 READMEs colados no mesmo arquivo, quebrando blocos Markdown.</li>
+                <li><strong><code>git clone</code> inválido:</strong> link Markdown dentro de bloco <code>bash</code>.</li>
+                <li><strong>Licença MIT indevida:</strong> sem arquivo <code>LICENSE</code> e link apontando para pesquisa do Google.</li>
+              </ul>
+
+              <div class="diff-box">
+                <div class="diff-box__head">
+                  <span>readme.md (evidência real do diff — PR #12)</span>
+                  <span>+181 / -28</span>
+                </div>
+                <pre><span class="diff-err">+ git clone [https://github.com/GLE-G4/...](https://...)</span>
+<span class="diff-dim">...</span>
+<span class="diff-err">+ 4. Faça o **Push**Aqui está uma versão aprimorada do **README.md**...</span>
+<span class="diff-err">+ ```markdown  ← abre 2º README e quebra renderização</span>
+<span class="diff-err">+ Este projeto está sob a licença [MIT](https://www.google.com/search?q=LICENSE)</span></pre>
+              </div>
+            </div>
+
+            <!-- PR #13 -->
+            <div class="card card--clay">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px">
+                <h3 style="margin: 0">PR #13 — Confirmação no Reset</h3>
+                <span class="badge badge--warn">Request Changes</span>
+              </div>
+              <p style="margin: 0 0 8px; font-size: 11.5px; color: var(--muted)"><strong>Autor:</strong> Gustavo Wacker (<code>Gustavo499-max</code>) · Boa UX, bug crítico</p>
+              <ul class="bullet-list bullet-list--clay" style="gap: 5px">
+                <li><strong>JS colado dentro de <code>&lt;style&gt;</code> (linha 25):</strong> navegador não executa <code>window.confirm</code>.</li>
+                <li><strong>Quebra visual grave:</strong> token residual <code>);</code> invalida a regra CSS <code>.site-header</code>.</li>
+                <li><strong>Listener antigo mantido:</strong> não substituiu o handler nas linhas 562–566 do <code>&lt;script&gt;</code>.</li>
+              </ul>
+
+              <div class="diff-box">
+                <div class="diff-box__head">
+                  <span>index.html — linha 22 (dentro de &lt;style&gt;!)</span>
+                  <span>+20</span>
+                </div>
+                <pre><span class="diff-dim">  .page-shell { overflow: hidden; min-width: 320px; ... }</span>
+<span class="diff-err">+ // redefinir formulário com confirmação</span>
+<span class="diff-err">+ document.getElementById("resetBtn").addEventListener("click", ...</span>
+<span class="diff-err">+   var confirmarReset = window.confirm("Deseja realmente limpar...");</span>
+<span class="diff-err">+ });  ← contamina o seletor abaixo e quebra o header!</span>
+<span class="diff-dim">  /* header */ .site-header { min-height: 76px; display: flex; ... }</span></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer">
+            <span>Questão 3 — Revisão construtiva (Request Changes)</span>
+            <span>09 / 12</span>
+          </div>
+        </section>
+
+        <!-- ==================== SLIDE 10: SÍNTESE QA ==================== -->
+        <section
+          class="slide"
+          data-title="3F. Síntese das Contribuições e Lições de QA"
+          data-notes="Esse quadro resume o nosso balanço completo: 5 PRs avaliados, 3 aprovados e mergeados sem conflitos e 2 devolvidos para ajustes evitando regressões reais. A maior lição foi perceber que 'sem conflito de merge' não significa 'pronto para produção' — revisão técnica cuidadosa é o que sustenta um projeto open source saudável."
+        >
+          <div class="slide-header">
+            <div>
+              <p class="eyebrow">Questão 3F • Balanço das contribuições recebidas</p>
+              <h2 class="slide-title">Síntese de QA e <i>lições aprendidas</i></h2>
+            </div>
+            <span class="slide-tag slide-tag--focus">Foco Principal</span>
+          </div>
+
+          <div class="slide-body">
+            <div class="kpi-row">
+              <div class="kpi">
+                <strong>5</strong>
+                <span>PRs da turma<br />auditados</span>
+              </div>
+              <div class="kpi kpi--merged">
+                <strong>3</strong>
+                <span>Aprovados e<br />mergeados</span>
+              </div>
+              <div class="kpi kpi--clay">
+                <strong>2</strong>
+                <span>Request Changes<br />(em ajuste)</span>
+              </div>
+              <div class="kpi">
+                <strong>0</strong>
+                <span>Regressões na<br />branch main</span>
+              </div>
+            </div>
+
+            <table class="qa-table">
+              <thead>
+                <tr>
+                  <th style="width: 54px">PR</th>
+                  <th>Autor</th>
+                  <th>Proposta</th>
+                  <th>Decisão</th>
+                  <th>Motivo decisivo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>#9</strong></td>
+                  <td>Thiago Fischer</td>
+                  <td>Zoom mobile + foco de teclado</td>
+                  <td><span class="badge badge--merged">Merged</span></td>
+                  <td>Acessibilidade WCAG, contraste <code>8,46:1</code>, cirúrgico</td>
+                </tr>
+                <tr>
+                  <td><strong>#10</strong></td>
+                  <td>Gustavo Azzola</td>
+                  <td>Botão de compartilhar resultado</td>
+                  <td><span class="badge badge--merged">Merged</span></td>
+                  <td>Fallback completo (<code>share → clipboard → alert</code>)</td>
+                </tr>
+                <tr>
+                  <td><strong>#11</strong></td>
+                  <td>Luis Talgatti</td>
+                  <td>Fix preset ativo (Issue 5)</td>
+                  <td><span class="badge badge--merged">Merged</span></td>
+                  <td>Fecha Issue 5 + refatoração <code>clearActivePreset()</code></td>
+                </tr>
+                <tr>
+                  <td><strong>#12</strong></td>
+                  <td><code>estefanycunha60057-star</code></td>
+                  <td>Novo <code>readme.md</code></td>
+                  <td><span class="badge badge--warn">Ajustes</span></td>
+                  <td>README duplicado, Markdown/clone/licença quebrados</td>
+                </tr>
+                <tr>
+                  <td><strong>#13</strong></td>
+                  <td>Gustavo Wacker</td>
+                  <td>Confirmação no reset</td>
+                  <td><span class="badge badge--warn">Ajustes</span></td>
+                  <td>JS colado em <code>&lt;style&gt;</code>, quebra <code>.site-header</code></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="cols-2" style="grid-template-columns: repeat(3, 1fr); gap: 12px; flex: none">
+              <div class="card card--accent" style="padding: 10px 13px">
+                <p style="margin: 0; font-size: 11.6px"><strong>1. PR pequeno vence:</strong> <code>#9</code> e <code>#11</code> entregaram alto impacto com mínimo risco.</p>
+              </div>
+              <div class="card card--accent" style="padding: 10px 13px">
+                <p style="margin: 0; font-size: 11.6px"><strong>2. Testar é inegociável:</strong> “sem conflito no Git” não garante código funcional (<code>#12</code> e <code>#13</code>).</p>
+              </div>
+              <div class="card card--accent" style="padding: 10px 13px">
+                <p style="margin: 0; font-size: 11.6px"><strong>3. Revisar é colaborar:</strong> feedback respeitoso e objetivo ajuda o colega a evoluir.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer">
+            <span>Questão 3 — Fechamento da avaliação de QA</span>
+            <span>10 / 12</span>
+          </div>
+        </section>
+
+        <!-- ==================== SLIDE 11: SUGESTÕES ENVIADAS ==================== -->
+        <section
+          class="slide"
+          data-title="4. Sugestões oferecidas para outros grupos"
+          data-notes="Do outro lado da colaboração, também analisamos os 7 projetos dos demais grupos e abrimos Issues focadas em usabilidade, documentação e acessibilidade — desde busca por livros e pontos de reciclagem até confirmação de exclusão e ajuste de fonte para acessibilidade. Aqui destacamos as 7 propostas enviadas pelo nosso grupo e quais já foram aceitas pelos colegas."
+        >
+          <div class="slide-header">
+            <div>
+              <p class="eyebrow">Questão 4 • Nossa contribuição externa</p>
+              <h2 class="slide-title">Sugestões oferecidas para <i>outros grupos</i></h2>
+            </div>
+            <span class="slide-tag">7 Issues propostas</span>
+          </div>
+
+          <div class="slide-body">
+            <table class="qa-table">
+              <thead>
+                <tr>
+                  <th>Projeto / Repositório</th>
+                  <th>Sugestão (Issue) proposta pelo nosso grupo</th>
+                  <th style="width: 170px">Status no projeto</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Modus</strong> · <code>unifecaf-modus-project</code></td>
+                  <td>Criar página inicial explicando o funcionamento e objetivo da aplicação</td>
+                  <td><span class="badge badge--todo">Atualizar status</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Água Consciente</strong> · <code>Agua-Consciente</code></td>
+                  <td>Melhorar layout mobile para organizar informações de economia de água</td>
+                  <td><span class="badge badge--todo">Atualizar status</span></td>
+                </tr>
+                <tr>
+                  <td><strong>TrocaTroca</strong> · <code>TrocaTroca</code></td>
+                  <td>Adicionar confirmação antes de excluir item para evitar remoção acidental</td>
+                  <td><span class="badge badge--todo">Atualizar status</span></td>
+                </tr>
+                <tr>
+                  <td><strong>LibraryFECAF</strong> · <code>LibraryFECAF</code></td>
+                  <td>Adicionar busca de livros por título ou autor</td>
+                  <td><span class="badge badge--todo">Atualizar status</span></td>
+                </tr>
+                <tr>
+                  <td><strong>EcoGrupo7</strong> · <code>EcoGrupo7</code></td>
+                  <td>Melhorar <code>README.md</code> com objetivo, execução e tecnologias</td>
+                  <td><span class="badge badge--todo">Atualizar status</span></td>
+                </tr>
+                <tr>
+                  <td><strong>MenuViewer</strong> · <code>MenuViewer</code></td>
+                  <td>Acessibilidade no cardápio: aumentar e diminuir tamanho da fonte</td>
+                  <td><span class="badge badge--todo">Atualizar status</span></td>
+                </tr>
+                <tr>
+                  <td><strong>EcoMap</strong> · <code>EcoMap</code></td>
+                  <td>Pesquisar pontos de reciclagem por nome ou tipo de material</td>
+                  <td><span class="badge badge--todo">Atualizar status</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="card card--accent" style="padding: 11px 16px; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px">
+              <p style="margin: 0; font-size: 12px">
+                <strong>Foco das nossas contribuições:</strong> usabilidade prática, responsividade mobile, acessibilidade, prevenção de erros e documentação clara para onboarding.
+              </p>
+              <span class="badge badge--todo" style="flex: none">Confirmar aceites &amp; PRs enviados</span>
+            </div>
+          </div>
+
+          <div class="slide-footer">
+            <span>Questão 4 — Contribuições enviadas aos colegas</span>
+            <span>11 / 12</span>
+          </div>
+        </section>
+
+        <!-- ==================== SLIDE 12: DE AGORA EM DIANTE ==================== -->
+        <section
+          class="slide slide--dark"
+          data-title="5. De agora em diante... Vamos colaborar?"
+          data-notes="Respondendo à pergunta final: sim, vamos continuar colaborando. A disciplina desmistificou a ideia de que contribuir em open source exige uma grande mudança complexa. Como vimos nos PRs aprovados do nosso próprio projeto, correções pequenas, bem testadas e bem explicadas geram impacto real e constroem um portfólio técnico sólido. Quem quiser testar o Rastro Clima agora no celular — inclusive com o zoom e o botão de compartilhar que aprovamos — o QR Code está na tela. Obrigado!"
+        >
+          <div class="slide-header">
+            <div>
+              <p class="eyebrow">Questão 5 • Próximos passos</p>
+              <h2 class="slide-title">De agora em diante... <i>Vamos colaborar?</i></h2>
+            </div>
+            <span class="slide-tag">Sim — com método!</span>
+          </div>
+
+          <div class="cols-split-wide-left" style="align-items: center">
+            <div style="display: flex; flex-direction: column; gap: 16px">
+              <ul class="bullet-list bullet-list--lime" style="gap: 13px">
+                <li style="font-size: 14px">
+                  <strong>Começar pelo real e acessível:</strong> <em>good first issues</em>, documentação, acessibilidade e pequenos bugs.
+                </li>
+                <li style="font-size: 14px">
+                  <strong>Responder às 4 perguntas em todo PR:</strong> qual problema, o que mudou, por quê e como foi testado.
+                </li>
+                <li style="font-size: 14px">
+                  <strong>Mentalidade de QA antes de abrir PR:</strong> testar no navegador, conferir diff linha a linha e validar links.
+                </li>
+                <li style="font-size: 14px">
+                  <strong>Portfólio público verificável:</strong> histórico real de código, documentação e revisões técnicas construtivas.
+                </li>
+              </ul>
+
+              <div
+                style="
+                  padding: 16px 20px;
+                  border-left: 3px solid var(--lime);
+                  background: rgba(255, 255, 255, 0.08);
+                  border-radius: 0 10px 10px 0;
+                "
+              >
+                <p style="margin: 0; font-family: 'DM Serif Display', Georgia, serif; font-size: 20px; line-height: 1.3; color: #fff">
+                  “Deixamos de ser apenas usuários de open source para nos tornarmos colaboradores — e aprendemos que revisar bem é tão importante quanto programar bem.”
+                </p>
+              </div>
+            </div>
+
+            <div
+              style="
+                background: var(--paper-light);
+                color: var(--atlas-deep);
+                border-radius: 14px;
+                padding: 22px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 10px;
+                box-shadow: 12px 14px 0 rgba(0, 0, 0, 0.25);
+              "
+            >
+              <span class="eyebrow" style="margin: 0">Teste ao vivo no celular</span>
+              <h3 style="margin: 0; font-family: 'DM Serif Display', Georgia, serif; font-size: 23px; font-weight: 400; color: var(--atlas)">
+                Rastro Clima
+              </h3>
+              <div
+                style="
+                  width: 176px;
+                  height: 176px;
+                  border: 1px solid var(--line);
+                  border-radius: 10px;
+                  background: #fbfaf6;
+                  display: grid;
+                  place-items: center;
+                  padding: 8px;
+                "
+              >
+                <img
+                  id="qrImg"
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=24533b&bgcolor=fbfaf6&data=https%3A%2F%2Fgle-g4.github.io%2Fopen-source---sustentabilidade%2F"
+                  alt="QR Code para abrir o Rastro Clima"
+                  style="width: 100%; height: 100%; object-fit: contain"
+                  onerror="this.style.display='none'; document.getElementById('qrFallback').style.display='block';"
+                />
+                <div id="qrFallback" style="display: none; font-size: 11px; color: var(--atlas); font-weight: 700; padding: 8px">
+                  Acesse no navegador:<br /><code>gle-g4.github.io/<br />open-source---sustentabilidade</code>
+                </div>
+              </div>
+              <p style="margin: 0; font-size: 11px; color: var(--muted); line-height: 1.4">
+                Já com <strong>PR #9</strong> (zoom/foco), <strong>PR #10</strong> (compartilhar) e <strong>PR #11</strong> (fix preset) no ar!
+              </p>
+              <div style="font-size: 10.5px; font-weight: 800; color: var(--atlas); word-break: break-all">
+                gle-g4.github.io/open-source---sustentabilidade
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer">
+            <span>Obrigado! · João V. Souza, Gleice Oliveira, Héricles Lima &amp; Julia Helena</span>
+            <span>12 / 12</span>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <nav class="controls" aria-label="Controles da apresentação">
+      <button class="ctrl-btn" id="prevBtn" type="button" title="Slide anterior (←)">← Anterior</button>
+      <span class="ctrl-counter" id="counter">01 / 12</span>
+      <button class="ctrl-btn" id="nextBtn" type="button" title="Próximo slide (→ ou Espaço)">Próximo →</button>
+      <button class="ctrl-btn" id="notesBtn" type="button" title="Mostrar/ocultar falas (N)">Notas (N)</button>
+      <button class="ctrl-btn" id="gridBtn" type="button" title="Visão geral dos slides (G)">Slides (G)</button>
+      <button class="ctrl-btn" id="fsBtn" type="button" title="Tela cheia (F)">Tela cheia (F)</button>
+      <button class="ctrl-btn" id="printBtn" type="button" title="Exportar PDF / Imprimir (P)">PDF (P)</button>
+    </nav>
+
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+    <!-- Speaker Notes Drawer -->
+    <aside class="notes-drawer" id="notesDrawer" aria-live="polite">
+      <h4>
+        <span>Fala sugerida — <span id="notesTitle"></span></span>
+        <button class="ctrl-btn" id="closeNotesBtn" type="button" style="padding: 2px 8px; font-size: 10px">Fechar</button>
+      </h4>
+      <p id="notesBody"></p>
+    </aside>
+
+    <!-- Slide Overview Grid -->
+    <div class="overview-modal" id="overviewModal" role="dialog" aria-label="Visão geral dos slides">
+      <div class="overview-head">
+        <h2>Visão geral — 12 slides</h2>
+        <button class="ctrl-btn" id="closeGridBtn" type="button">Fechar (Esc)</button>
+      </div>
+      <div class="overview-grid" id="overviewGrid"></div>
+    </div>
+
+    <!-- Image Lightbox -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-label="Imagem ampliada">
+      <img id="lightboxImg" src="" alt="" />
+      <div class="lightbox-cap" id="lightboxCap"></div>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+        var total = slides.length;
+        var current = 0;
+
+        var prevBtn = document.getElementById("prevBtn");
+        var nextBtn = document.getElementById("nextBtn");
+        var counter = document.getElementById("counter");
+        var progressFill = document.getElementById("progressFill");
+        var notesBtn = document.getElementById("notesBtn");
+        var notesDrawer = document.getElementById("notesDrawer");
+        var notesTitle = document.getElementById("notesTitle");
+        var notesBody = document.getElementById("notesBody");
+        var closeNotesBtn = document.getElementById("closeNotesBtn");
+        var gridBtn = document.getElementById("gridBtn");
+        var overviewModal = document.getElementById("overviewModal");
+        var overviewGrid = document.getElementById("overviewGrid");
+        var closeGridBtn = document.getElementById("closeGridBtn");
+        var fsBtn = document.getElementById("fsBtn");
+        var printBtn = document.getElementById("printBtn");
+        var lightbox = document.getElementById("lightbox");
+        var lightboxImg = document.getElementById("lightboxImg");
+        var lightboxCap = document.getElementById("lightboxCap");
+
+        function pad(n) {
+          return n < 10 ? "0" + n : "" + n;
+        }
+
+        function goTo(index) {
+          if (index < 0) index = 0;
+          if (index >= total) index = total - 1;
+          current = index;
+
+          slides.forEach(function (s, i) {
+            s.classList.remove("is-active", "is-prev");
+            if (i === current) s.classList.add("is-active");
+            else if (i < current) s.classList.add("is-prev");
+          });
+
+          counter.textContent = pad(current + 1) + " / " + pad(total);
+          progressFill.style.width = ((current + 1) / total) * 100 + "%";
+          prevBtn.disabled = current === 0;
+          nextBtn.disabled = current === total - 1;
+
+          var active = slides[current];
+          notesTitle.textContent = active.dataset.title || "Slide " + (current + 1);
+          notesBody.textContent = active.dataset.notes || "";
+
+          if (window.location.hash !== "#slide-" + (current + 1)) {
+            history.replaceState(null, "", "#slide-" + (current + 1));
+          }
+          renderOverviewActive();
+        }
+
+        function buildOverview() {
+          overviewGrid.innerHTML = "";
+          slides.forEach(function (s, i) {
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "overview-item";
+            btn.innerHTML =
+              "<small>Slide " + pad(i + 1) + "</small><b>" + (s.dataset.title || "Slide " + (i + 1)) + "</b>";
+            btn.addEventListener("click", function () {
+              goTo(i);
+              overviewModal.classList.remove("is-open");
+            });
+            overviewGrid.appendChild(btn);
+          });
+        }
+
+        function renderOverviewActive() {
+          var items = overviewGrid.querySelectorAll(".overview-item");
+          items.forEach(function (item, i) {
+            item.classList.toggle("is-current", i === current);
+          });
+        }
+
+        prevBtn.addEventListener("click", function () { goTo(current - 1); });
+        nextBtn.addEventListener("click", function () { goTo(current + 1); });
+
+        function toggleNotes() {
+          var open = notesDrawer.classList.toggle("is-open");
+          notesBtn.classList.toggle("is-on", open);
+        }
+        notesBtn.addEventListener("click", toggleNotes);
+        closeNotesBtn.addEventListener("click", toggleNotes);
+
+        function toggleGrid() {
+          overviewModal.classList.toggle("is-open");
+        }
+        gridBtn.addEventListener("click", toggleGrid);
+        closeGridBtn.addEventListener("click", toggleGrid);
+
+        fsBtn.addEventListener("click", function () {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(function () {});
+          } else {
+            document.exitFullscreen().catch(function () {});
+          }
+        });
+
+        printBtn.addEventListener("click", function () {
+          window.print();
+        });
+
+        // Click-to-zoom on any slide screenshot
+        document.querySelectorAll(".shot-img-wrap img").forEach(function (img) {
+          img.addEventListener("click", function () {
+            lightboxImg.src = img.src;
+            lightboxImg.alt = img.alt;
+            var cap = img.closest(".shot-frame").querySelector(".shot-caption span");
+            lightboxCap.textContent = cap ? cap.textContent : img.alt;
+            lightbox.classList.add("is-open");
+          });
+        });
+
+        lightbox.addEventListener("click", function () {
+          lightbox.classList.remove("is-open");
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") {
+            lightbox.classList.remove("is-open");
+            overviewModal.classList.remove("is-open");
+            return;
+          }
+          if (lightbox.classList.contains("is-open") || overviewModal.classList.contains("is-open")) return;
+
+          if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") {
+            e.preventDefault();
+            goTo(current + 1);
+          } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+            e.preventDefault();
+            goTo(current - 1);
+          } else if (e.key === "Home") {
+            goTo(0);
+          } else if (e.key === "End") {
+            goTo(total - 1);
+          } else if (e.key.toLowerCase() === "n") {
+            toggleNotes();
+          } else if (e.key.toLowerCase() === "g") {
+            toggleGrid();
+          } else if (e.key.toLowerCase() === "f") {
+            fsBtn.click();
+          } else if (e.key.toLowerCase() === "p") {
+            window.print();
+          }
+        });
+
+        // Initial slide from hash
+        buildOverview();
+        var hashMatch = window.location.hash.match(/^#slide-(\d+)$/);
+        var initial = hashMatch ? parseInt(hashMatch[1], 10) - 1 : 0;
+        goTo(initial);
+      })();
+    </script>
+  </body>
+</html>
