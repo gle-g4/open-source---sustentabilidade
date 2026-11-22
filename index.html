@@ -3,7 +3,7 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#24533B" />
     <meta name="description" content="Estime a sua pegada de carbono mensal com referências brasileiras e descubra hábitos de menor impacto." />
     <title>Calculadora de pegada de carbono ultra pro max</title>
@@ -80,7 +80,7 @@
       .range-field input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; background: var(--paper-light); border: 2px solid var(--atlas); border-radius: 50%; box-shadow: 0 2px 6px rgba(22,49,36,.15); border: none; }
       .range-scale { display: flex; justify-content: space-between; color: #90998f; font-size: 9px; font-weight: 700; }
       .field-group select { width: 100%; margin-top: 8px; appearance: none; padding: 11px 37px 11px 13px; border: 1px solid var(--line); border-radius: 3px; color: var(--atlas); background: linear-gradient(45deg,transparent 50%,var(--atlas) 50%) calc(100% - 17px) 50%/6px 6px no-repeat,linear-gradient(135deg,var(--atlas) 50%,transparent 50%) calc(100% - 12px) 50%/6px 6px no-repeat,#fffefb; font-size: 12px; font-weight: 700; cursor: pointer; transition: border-color 160ms var(--ease-out); } .field-group select:hover { border-color: var(--moss); }
-      .dual-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 560px; } .dual-fields label { display: grid; align-items: start; gap: 8px; } .dual-fields input { width: 100%; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 8px 1px; color: var(--atlas); background: transparent; font: 26px/1 "DM Serif Display", Georgia, serif; } .dual-fields input:focus { border-color: var(--atlas); outline: 0; }
+      .dual-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 560px; } .dual-fields label { display: grid; align-items: start; gap: 8px; } .dual-fields input { width: 100%; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 8px 1px; color: var(--atlas); background: transparent; font: 26px/1 "DM Serif Display", Georgia, serif; } .dual-fields input:focus { border-color: var(--atlas); }
       .field-hint { color: var(--moss); font-size: 10px; margin: 9px 0 0; }
       .diet-grid { display: grid; gap: 10px; max-width: 615px; }
       .diet-grid label { position: relative; cursor: pointer; display: block; }
@@ -88,6 +88,7 @@
       .diet-grid span { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 15px 12px; background: #f3f4ed; border-left: 2px solid #9bb58b; transition: background 160ms var(--ease-out), border-color 160ms var(--ease-out); }
       .diet-grid b { color: var(--atlas); font-size: 12px; font-weight: 800; display: block; }
       .diet-grid small { display: block; color: var(--muted); margin-top: 4px; font-size: 10px; }
+      .diet-grid input:focus-visible + span, .recycle-choices input:focus-visible + span { outline: 3px solid var(--atlas); outline-offset: 3px; }
       .diet-grid input:checked + span { background: #e5edcf; border-color: var(--lime); }
       .diet-grid em { flex: none; font-style: normal; color: var(--muted); font-size: 10px; font-weight: 700; }
 
